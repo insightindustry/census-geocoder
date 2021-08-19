@@ -121,13 +121,6 @@ Using Batched Addresses
 
   geography = geocoder.geography.from_batch('my-batched-address-file.csv')
 
-  # Via a list of Addresses
-  location = geocoder.location.from_batch(['4600 Silver Hill Rd, Washington, DC 20233',
-                                           '1600 Pennsylvania Ave NW, Washington, DC 20500'])
-
-  geography = geocoder.geography.from_batch(['4600 Silver Hill Rd, Washington, DC 20233',
-                                             '1600 Pennsylvania Ave NW, Washington, DC 20500'])
-
 
 Using Coordinates
 -------------------------
