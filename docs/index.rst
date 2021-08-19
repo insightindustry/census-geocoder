@@ -4,6 +4,31 @@ US Census Geocoder
 
 **(Unofficial) Python Binding for the US Census Geocoder API**
 
+.. sidebar:: Version Compatability
+
+  The **US Census Geocoder** is designed to be compatible with:
+
+    * Python 3.8 or higher
+
+.. include:: _unit_tests_code_coverage.rst
+
+.. toctree::
+ :hidden:
+ :maxdepth: 3
+ :caption: Contents:
+
+ Home <self>
+ Quickstart: Patterns and Best Practices <quickstart>
+ Using the Census Geocoder <using>
+ Census Geographies Explained <geographies>
+ API Reference <api>
+ Error Reference <errors>
+ Contributor Guide <contributing>
+ Testing Reference <testing>
+ Release History <history>
+ Glossary <glossary>
+ License <license>
+
 The **US Census Geocoder** is a Python library that provides Python bindings for the
 `U.S. Census Geocoder API <https://geocoding.geo.census.gov/geocoder/>`_. It enables
 you to use simple Python function calls to retrieve Python object representations of
@@ -17,8 +42,6 @@ geographic meta-data for the addresses or coordinates that you are searching for
   for your programmatic interactions with the excellent services provided by the US Census
   Bureau.
 
-**COMPLETE DOCUMENTATION:** https://census_geocoder.readthedocs.org/en/latest.html
-
 .. contents::
  :depth: 3
  :backlinks: entry
@@ -29,23 +52,12 @@ geographic meta-data for the addresses or coordinates that you are searching for
 Installation
 ***************
 
-To install the **US Census Geocoder**, just execute:
-
-.. code:: bash
-
- $ pip install census-geocoder
-
+.. include:: _installation.rst
 
 Dependencies
 ==============
 
-.. list-table::
-   :widths: 100
-   :header-rows: 1
-
-   * - Python 3.x
-   * - | * `Validator-Collection v1.5 <https://github.com/insightindustry/validator-collection>`_ or higher
-       | * `Backoff-Utils v.1.0 <https://github.com/insightindustry/backoff-utils>`_ or higher
+.. include:: _dependencies.rst
 
 -------------
 
@@ -63,41 +75,33 @@ The **Census Geocoder** library is designed to provide a Pythonic interface for
 interacting with the Census Bureau's
 `Geocoder API <https://geocoding.geo.census.gov/geocoder/>`_. It is specifically designed
 to eliminate the scaffolding needed to query the API directly, and provides for simpler
-and cleaner function calls to return forward geocoding and
-reverse geocoding information. Furthermore, it exposes Python object
+and cleaner function calls to return :term:`forward geocoding` and
+:term:`reverse geocoding` information. Furthermore, it exposes Python object
 representations of the outputs returned by the API making it easy to work with the API's
 data in your applications.
 
-
-**************************************
-Key US Census Geocoder Features
-**************************************
+Key Census Geocoder Features
+=================================
 
 * **Easy to adopt**. Just install and import the library, and you can be
-  forward geocoding and reverse geocoding with just two lines of code.
+  :term:`forward geocoding` and :term:`reverse geocoding` with just two lines of code.
 * **Extensive documentation**. One of the main limitations of the Geocoder API is that its
   documentation is scattered across the different datasets released by the Census Bureau,
   making it hard to navigate and understand. We've tried to fix that.
-* Location Search
-
-  * Using Geographic Coordinates (reverse geocoding)
-  * Using a One-line Address
-  * Using a Parametrized Address
-  * Using Batched Addresses
-
-* Geography Search
-
-  * Using Geographic Coordinates (reverse geocoding)
-  * Using a One-line Address
-  * Using a Parametrized Address
-  * Using Batched Addresses
-
-* Supports all available benchmarks, vintages, and layers.
+* Supports all available :term:`benchmarks <benchmark>`, :term:`vintages <vintage>`, and
+  :term:`layers <layer>`.
 * Simplified syntax for indicating benchmarks, vintages, and layers.
+* Supports single line address, :term:`parametrized address`, batch file, and coordinate
+  geocoding.
 * No more hard to interpret field names. The library uses simplified (read: human
   understandable) names for location and geography properties.
 
-------------------
+The **US Census Geocoder** vs Alternatives
+==========================================
+
+.. include:: _versus_alternatives.rst
+
+---------------
 
 *********************************
 Hello World and Basic Usage
@@ -174,11 +178,7 @@ Work with Python Objects
 
   >> 4600 SILVER HILL RD, WASHINGTON, DC 20233
 
-For detailed documentation, please see the
-`complete documentation <https://census-geocoder.readthedocs.org/en/latest.html>`_
-
 ---------------
-
 
 *********************
 Questions and Issues
@@ -194,7 +194,10 @@ Contributing
 *********************
 
 We welcome contributions and pull requests! For more information, please see the
-`Contributor Guide <https://census-geocoder.readthedocs.io/en/latest/contributing.html>`_.
+:doc:`Contributor Guide <contributing>`_. And thanks to all those who've already
+contributed:
+
+.. include:: _contributors.rst
 
 -------------------
 
@@ -206,7 +209,7 @@ We use `TravisCI <http://travisci.org>`_ for our build automation and
 `ReadTheDocs <https://readthedocs.org>`_ for our documentation.
 
 Detailed information about our test suite and how to run tests locally can be
-found in our `Testing Reference <https://census-geocoder.readthedocs.io/en/latest/testing.html>`_.
+found in our :doc:`Testing Reference <testing>`.
 
 --------------------
 
@@ -214,5 +217,13 @@ found in our `Testing Reference <https://census-geocoder.readthedocs.io/en/lates
 License
 **********************
 
-The **Census Geocoder** is made available under an
-`MIT License <https://census-geocoder.readthedocs.io/en/latest/license.html>`_.
+The **Census Geocoder** is made available under an :doc:`MIT License <license>`.
+
+-----------------
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
