@@ -6,8 +6,6 @@ census_geocoder/geographies.py
 Defines :class:`Geography` geographic entities.
 
 """
-from abc import abstractmethod
-
 from validator_collection import validators, checkers
 
 from census_geocoder import errors, metaclasses
