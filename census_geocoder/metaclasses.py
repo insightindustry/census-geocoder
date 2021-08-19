@@ -15,40 +15,12 @@ from validator_collection import validators
 from backoff_utils import backoff
 
 from census_geocoder import errors
-
-CENSUS_API_URL = 'https://geocoding.geo.census.gov'
-
-BENCHMARKS = {
-    'CURRENT': 'Public_AR_Current',
-    'TAB2020': 'Public_AR_TAB2020',
-    'CENSUS2020': 'Public_AR_Census2020'
-}
-
-VINTAGES = {
-    'Public_AR_Current': {
-        'CURRENT': 'Current_Current',
-        'CENSUS2020': 'Census2020_Current',
-        'ACS2019': 'ACS2019_Current',
-        'ACS2018': 'ACS2018_Current',
-        'ACS2017': 'ACS2017_Current',
-        'CENSUS2010': 'Census2010_Current'
-    },
-    'Public_AR_Census2020': {
-        'CENSUS2020': 'Census2020_Census2020',
-        'CENSUS2010': 'Census2010_Census2020'
-    },
-    'Public_AR_TAB2020': {
-        'CURRENT': 'Current_TAB2020',
-        'CENSUS2020': 'Census2020_TAB2020',
-        'ACS2019': 'ACS2019_TAB2020',
-        'ACS2018': 'ACS2018_TAB2020',
-        'ACS2017': 'ACS2017_TAB2020',
-        'CENSUS2010': 'Census2010_TAB2020'
-    }
-}
+from census_geocoder.constants import CENSUS_API_URL, BENCHMARKS, VINTAGES, LAYERS
 
 
-def parse_benchmark_vintage(benchmark = 'CURRENT', vintage = 'CURRENT'):
+def parse_benchmark_vintage_layers(benchmark = 'CURRENT',
+                                   vintage = 'CURRENT',
+                                   layers = 'all'):
     """Parse the benchmark and vintage received.
 
     :param benchmark: The :term:`Benchmark` value to parse into its canonical form.
@@ -59,9 +31,9 @@ def parse_benchmark_vintage(benchmark = 'CURRENT', vintage = 'CURRENT'):
       Defaults to ``CURRENT``.
     :type vintage: :class:`str <python:str>`
 
-    :returns: The canonical ``(benchmark, vintage)``.
-    :rtype: :class:`tuple <python:tuple>` of :class:`str <python:str>` and
-      :class:`str <python:str>`
+    :returns: The canonical ``(benchmark, vintage, layers)``.
+    :rtype: :class:`tuple <python:tuple>` of :class:`str <python:str>`,
+      :class:`str <python:str>`, and :class:`str <python:str>`
 
     :raises UnrecognizedBenchmarkError: if the ``benchmark`` supplied is not
       recognized
@@ -85,7 +57,19 @@ def parse_benchmark_vintage(benchmark = 'CURRENT', vintage = 'CURRENT'):
             f'"{benchmark}" benchmark.'
         )
 
-    return benchmark, vintage
+    if layers != 'all':
+        layer_set = LAYERS.get(vintage, None)
+        if layer_set:
+            layer_targets = layers.split(',')
+            layers = []
+            for layer in layer_targets:
+                if layer in layer_set:
+                    layers.append(layer_set.get(layer, None))
+            layers = ','.join(layers)
+        else:
+            layers = None
+
+    return benchmark, vintage, layers
 
 
 def check_length(file_):
@@ -205,7 +189,8 @@ class GeographicEntity(BaseEntity):
     def _get_one_line(cls,
                       one_line,
                       benchmark = 'CURRENT',
-                      vintage = 'CURRENT'):
+                      vintage = 'CURRENT',
+                      layers = 'all'):
         """Return data from a single-line address.
 
         :param one_line: The one-line address to geocode.
@@ -234,6 +219,10 @@ class GeographicEntity(BaseEntity):
 
         :type vintage: :class:`str <python:str>`
 
+        :param layers: The set of geographic layers to return for the request. Defaults to
+          ``'all'``.
+        :type layers: :class:`str <python:str>`
+
         :rtype: :class:`dict <python:dict>`
 
         :raises CensusAPIError: if the Census Geocoder API returned an error
@@ -243,15 +232,19 @@ class GeographicEntity(BaseEntity):
 
         """
         one_line = validators.string(one_line)
-        benchmark, vintage = parse_benchmark_vintage(benchmark, vintage)
+        benchmark, vintage, layers = parse_benchmark_vintage_layers(benchmark,
+                                                                    vintage,
+                                                                    layers)
 
         parameters = {
             'address': one_line,
             'benchmark': benchmark,
             'vintage': vintage,
-            'format': 'json',
-            'layers': 'all'
+            'format': 'json'
         }
+        if layers:
+            parameters['layers'] = layers
+
         url = f'{CENSUS_API_URL}/geocoder/{cls.entity_type}/onelineaddress'
 
         result = backoff(requests.get,
@@ -275,7 +268,8 @@ class GeographicEntity(BaseEntity):
                      state = None,
                      zip_code = None,
                      benchmark = 'CURRENT',
-                     vintage = 'CURRENT'):
+                     vintage = 'CURRENT',
+                     layers = 'all'):
         """Return data from a :term:`parametrized address`.
 
         :param street_1: A street address, e.g. ``'4600 Silver Hill Rd'``. Defaults to
@@ -325,6 +319,10 @@ class GeographicEntity(BaseEntity):
 
         :type vintage: :class:`str <python:str>`
 
+        :param layers: The set of geographic layers to return for the request. Defaults to
+          ``'all'``.
+        :type layers: :class:`str <python:str>`
+
         :rtype: :class:`dict <python:dict>`
 
         :raises NoAddressError: if the address information is completely empty
@@ -339,14 +337,18 @@ class GeographicEntity(BaseEntity):
         state = validators.string(state, allow_empty = True)
         zip_code = validators.string(zip_code, allow_empty = True)
 
-        benchmark, vintage = parse_benchmark_vintage(benchmark, vintage)
+        benchmark, vintage, layers = parse_benchmark_vintage_layers(benchmark,
+                                                                    vintage,
+                                                                    layers)
 
         parameters = {
             'benchmark': benchmark,
             'vintage': vintage,
-            'format': 'json',
-            'layers': 'all'
+            'format': 'json'
         }
+        if layers:
+            parameters['layers'] = layers
+
         is_valid = False
         if street_1:
             is_valid = True
@@ -384,7 +386,8 @@ class GeographicEntity(BaseEntity):
     def _get_batch_addresses(cls,
                              file_,
                              benchmark = 'CURRENT',
-                             vintage = 'CURRENT'):
+                             vintage = 'CURRENT',
+                             layers = 'all'):
         """Return data from a batch file in CSV, XLS/X, TXT, or DAT format.
 
         :param file_: The name of a file in CSV, XLS/X, DAT, or TXT format. Expects the
@@ -421,6 +424,10 @@ class GeographicEntity(BaseEntity):
 
         :type vintage: :class:`str <python:str>`
 
+        :param layers: The set of geographic layers to return for the request. Defaults to
+          ``'all'``.
+        :type layers: :class:`str <python:str>`
+
         :rtype: :class:`list <python:list>` of :class:`GeographicEntity`
 
         :raises NoFileProvidedError: if no ``file_`` is provided
@@ -433,7 +440,9 @@ class GeographicEntity(BaseEntity):
         :raises UnrecognizedVintageError: if the ``vintage`` supplied is not recognized
 
         """
-        benchmark, vintage = parse_benchmark_vintage(benchmark, vintage)
+        benchmark, vintage, layers = parse_benchmark_vintage_layers(benchmark,
+                                                                    vintage,
+                                                                    layers)
 
         file_ = validators.file_exists(file_, allow_empty = False)
         file_length = check_length(file_)
@@ -449,9 +458,10 @@ class GeographicEntity(BaseEntity):
         parameters = {
             'benchmark': benchmark,
             'vintage': vintage,
-            'format': 'json',
-            'layers': 'all'
+            'format': 'json'
         }
+        if layers:
+            parameters['layers'] = layers
 
         url = f'{CENSUS_API_URL}/geocoder/{cls.entity_type}/addressbatch'
 
@@ -534,10 +544,14 @@ class GeographicEntity(BaseEntity):
 
         :type vintage: :class:`str <python:str>`
 
+        :param layers: The set of geographic layers to return for the request. Defaults to
+          ``'all'``.
+        :type layers: :class:`str <python:str>`
+
         .. note::
 
-          If more than one parameter are supplied, this method will assume that a
-          parametrized address is provided.
+          If more than one address-related parameter are supplied, this method will assume
+          that a :term:`parametrized address` is provided.
 
         :returns: A given geographic entity.
         :rtype: :class:`GeographicEntity`
@@ -566,17 +580,21 @@ class GeographicEntity(BaseEntity):
         benchmark = kwargs.get('benchmark', 'CURRENT')
         vintage = kwargs.get('vintage', 'CURRENT')
 
+        layers = kwargs.get('layers', 'all')
+
         if one_line:
             result = cls._get_one_line(one_line,
                                        benchmark = benchmark,
-                                       vintage = vintage)
+                                       vintage = vintage,
+                                       layers = layers)
         else:
             result = cls._get_address(street_1 = street_1,
                                       city = city,
                                       state = state,
                                       zip_code = zip_code,
                                       benchmark = benchmark,
-                                      vintage = vintage)
+                                      vintage = vintage,
+                                      layers = layers)
 
         return cls.from_json(result)
 
@@ -596,6 +614,33 @@ class GeographicEntity(BaseEntity):
           * Zip Code
 
         :type file_: :class:`str <python:str>`
+
+        :param benchmark: The name of the :term:`benchmark` of data to return. Defaults to
+          ``'Current'`` which represents the current default benchmark, per the Census
+          Geocoder API. Accepts the following values:
+
+          * ``'Current'`` (default)
+          * ``'TAB2020'``
+          * ``'Census2020'``
+
+        :type benchmark: :class:`str <python:str>`
+
+        :param vintage: The vintage of Census data for which data should be returned.
+          Defaults to ``'Current'`` which represents the current default vintage per the
+          Census Geocoder API. Accepts the following values:
+
+          * ``'Current'`` (default)
+          * ``'Census2020'``
+          * ``'ACS2019'``
+          * ``'ACS2018'``
+          * ``'ACS2017'``
+          * ``'Census2010'``
+
+        :type vintage: :class:`str <python:str>`
+
+        :param layers: The set of geographic layers to return for the request. Defaults to
+          ``'all'``.
+        :type layers: :class:`str <python:str>`
 
         :returns: A collection of geographic entities.
         :rtype: :class:`list <python:list>` of :class:`GeographicEntity`
@@ -623,6 +668,11 @@ class GeographicEntity(BaseEntity):
         benchmark = kwargs.get('benchmark', 'CURRENT')
         vintage = kwargs.get('vintage', 'CURRENT')
 
-        result = cls._from_batch_file(file_, benchmark, vintage)
+        layers = kwargs.get('layers', 'all')
+
+        result = cls._from_batch_file(file_ = file_,
+                                      benchmark = benchmark,
+                                      vintage = vintage,
+                                      layers = layers)
 
         return [cls.from_list_item[x] for x in result]
