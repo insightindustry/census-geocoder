@@ -88,11 +88,23 @@ Key Census Geocoder Features
 * **Extensive documentation**. One of the main limitations of the Geocoder API is that its
   documentation is scattered across the different datasets released by the Census Bureau,
   making it hard to navigate and understand. We've tried to fix that.
+* Location Search
+
+  * Using Geographic Coordinates (reverse geocoding)
+  * Using a One-line Address
+  * Using a Parametrized Address
+  * Using Batched Addresses
+
+* Geography Search
+
+  * Using Geographic Coordinates (reverse geocoding)
+  * Using a One-line Address
+  * Using a Parametrized Address
+  * Using Batched Addresses
+
 * Supports all available :term:`benchmarks <benchmark>`, :term:`vintages <vintage>`, and
   :term:`layers <layer>`.
 * Simplified syntax for indicating benchmarks, vintages, and layers.
-* Supports single line address, :term:`parametrized address`, batch file, and coordinate
-  geocoding.
 * No more hard to interpret field names. The library uses simplified (read: human
   understandable) names for location and geography properties.
 
@@ -194,7 +206,7 @@ Contributing
 *********************
 
 We welcome contributions and pull requests! For more information, please see the
-:doc:`Contributor Guide <contributing>`_. And thanks to all those who've already
+:doc:`Contributor Guide <contributing>`. And thanks to all those who've already
 contributed:
 
 .. include:: _contributors.rst
@@ -221,8 +233,9 @@ The **Census Geocoder** is made available under an :doc:`MIT License <license>`.
 
 -----------------
 
+**********************
 Indices and tables
-==================
+**********************
 
 * :ref:`genindex`
 * :ref:`modindex`

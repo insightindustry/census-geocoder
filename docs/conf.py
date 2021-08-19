@@ -21,12 +21,11 @@ import sphinx_rtd_theme
 version_dict = {}
 with open(os.path.join(os.path.dirname(__file__),
                        '../',
-                       'sqlathanor',
+                       'census_geocoder',
                        '__version__.py')) as version_file:
-    exec(version_file.read(), version_dict)                                     # pylint: disable=W0122
+    exec(version_file.read(), version_dict)                                               # pylint: disable=W0122
 
 __version__ = version_dict.get('__version__')
-
 
 
 # -- Project information -----------------------------------------------------
