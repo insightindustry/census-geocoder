@@ -20,7 +20,7 @@
 
    * - `v.0.5 <https://github.com/insightindustry/census-geocoder/tree/v.0.1.0>`_
      -
-       .. image:: https://travis-ci.com/insightindustry/census-geocoder.svg?branch=v.0.8.0
+       .. image:: https://travis-ci.com/insightindustry/census-geocoder.svg?branch=v.0.1.0
          :target: https://travis-ci.com/insightindustry/census-geocoder
          :alt: Build Status (Travis CI)
 

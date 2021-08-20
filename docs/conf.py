@@ -14,6 +14,8 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 import os
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__name__), '..'))
 
 import sphinx_rtd_theme
 
@@ -93,3 +95,10 @@ html_context = {
     "github_version": "master", # Version
     "conf_py_path": "/docs/", # Path in the checkout to the docs root
 }
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3.6', None),
+    'validator-collection': ('http://validator-collection.readthedocs.io/en/latest/', None),
+}
+
+todo_include_todos = True

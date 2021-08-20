@@ -4,7 +4,7 @@ US Census Geocoder
 
 **(Unofficial) Python Binding for the US Census Geocoder API**
 
-.. sidebar:: Version Compatability
+.. sidebar:: Version Compatibility
 
   The **US Census Geocoder** is designed to be compatible with:
 
