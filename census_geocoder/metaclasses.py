@@ -6,6 +6,7 @@ census_geocoder/metaclasses.py
 Defines the metaclasses that are used throughout the library.
 
 """
+import os
 from abc import ABC, abstractmethod
 import csv
 import json
@@ -17,19 +18,30 @@ from backoff_utils import backoff
 from census_geocoder import errors
 from census_geocoder.constants import CENSUS_API_URL, BENCHMARKS, VINTAGES, LAYERS
 
+DEFAULT_BENCHMARK = os.environ.get('CENSUS_GEOCODER_BENCHMARK', 'CURRENT')
+DEFAULT_VINTAGE = os.environ.get('CENSUS_GEOCODER_VINTAGE', 'CURRENT')
+DEFAULT_LAYERS = os.environ.get('CENSUS_GEOCODER_LAYERS', 'all')
 
-def parse_benchmark_vintage_layers(benchmark = 'CURRENT',
-                                   vintage = 'CURRENT',
-                                   layers = 'all'):
+
+def parse_benchmark_vintage_layers(benchmark = DEFAULT_BENCHMARK,
+                                   vintage = DEFAULT_VINTAGE,
+                                   layers = DEFAULT_LAYERS):
     """Parse the benchmark and vintage received.
 
     :param benchmark: The :term:`Benchmark` value to parse into its canonical form.
-      Defaults to ``CURRENT``.
+      Defaults to ``CURRENT`` unless overridden by the ``CENSUS_GEOCODER_BENCHMARK``
+      environment variable.
     :type benchmark: :class:`str <python:str>`
 
     :param vintage: The :term:`Vintage` value to parse into its canonical form.
-      Defaults to ``CURRENT``.
+      Defaults to ``CURRENT`` unless overridden by the ``CENSUS_GEOCODER_VINTAGE``
+      environment variable.
     :type vintage: :class:`str <python:str>`
+
+    :param layers: The :term:`Layers <Layer>` that should be parsed into its canonical
+      form. Defaults to ``all`` unless overridden by the ``CENSUS_GEOCODER_LAYERS``
+      environment variable.
+    :type layers: :class:`str <python:str>`
 
     :returns: The canonical ``(benchmark, vintage, layers)``.
     :rtype: :class:`tuple <python:tuple>` of :class:`str <python:str>`,
@@ -188,39 +200,62 @@ class GeographicEntity(BaseEntity):
     @classmethod
     def _get_one_line(cls,
                       one_line,
-                      benchmark = 'CURRENT',
-                      vintage = 'CURRENT',
-                      layers = 'all'):
+                      benchmark = DEFAULT_BENCHMARK,
+                      vintage = DEFAULT_VINTAGE,
+                      layers = DEFAULT_LAYERS):
         """Return data from a single-line address.
 
         :param one_line: The one-line address to geocode.
         :type one_line: :class:`str <python:str>`
 
-        :param benchmark: The name of the :term:`benchmark` of data to return. Defaults to
-          ``'Current'`` which represents the current default benchmark, per the Census
-          Geocoder API. Accepts the following values:
+        :param benchmark: The name of the :term:`benchmark` of data to return. The default
+          value is determined by the ``CENSUS_GEOCODER_BENCHMARK`` environment variable,
+          and if that is not set defaults to ``'Current'`` which represents the current
+          default benchmark, per the `Census Geocoder API`_.
 
-          * ``'Current'`` (default)
-          * ``'TAB2020'``
-          * ``'Census2020'``
+          Accepts the following values:
+
+            * ``'Current'`` (default)
+            * ``'TAB2020'``
+            * ``'Census2020'``
 
         :type benchmark: :class:`str <python:str>`
 
-        :param vintage: The vintage of Census data for which data should be returned.
-          Defaults to ``'Current'`` which represents the current default vintage per the
-          Census Geocoder API. Accepts the following values:
+        :param vintage: The vintage of Census data for which data should be returned. The
+          default value is determined by the ``CENSUS_GEOCODER_VINTAGE`` environment
+          variable, and if that is not set defaults to ``'Current'`` which represents the
+          default vintage per the `Census Geocoder API`_.
 
-          * ``'Current'`` (default)
-          * ``'Census2020'``
-          * ``'ACS2019'``
-          * ``'ACS2018'``
-          * ``'ACS2017'``
-          * ``'Census2010'``
+          Acceptable values are dependent on the ``benchmark`` specified, as per the table below:
+
+            +--------------+---------------------+---------------------+---------------------+
+            |              |                          BENCHMARKS                             |
+            +              +---------------------+---------------------+---------------------+
+            |              | Current             | Census2020          | Tab2020             |
+            +==============+=====================+=====================+=====================+
+            | **VINTAGES** | Current             | Census2020          | Current             |
+            +              +---------------------+---------------------+---------------------+
+            |              | Census2020          | Census2010          | Census2020          |
+            +              +---------------------+---------------------+---------------------+
+            |              | ACS2019             |                     | ACS2019             |
+            +              +---------------------+---------------------+---------------------+
+            |              | ACS2018             |                     | ACS2018             |
+            +              +---------------------+---------------------+---------------------+
+            |              | ACS2017             |                     | ACS2017             |
+            +              +---------------------+---------------------+---------------------+
+            |              | Census2010          |                     | Census2010          |
+            +--------------+---------------------+---------------------+---------------------+
 
         :type vintage: :class:`str <python:str>`
 
-        :param layers: The set of geographic layers to return for the request. Defaults to
-          ``'all'``.
+        :param layers: The set of geographic layers to return for the request. The default
+          value is determined by the ``CENSUS_GEOCODER_LAYERS`` environment variable, and
+          if that is not set defaults to ``'all'``.
+
+            .. seealso::
+
+              * :doc:`Geographies <geographies>` :ref:`Benchmarks, Vintages, and Layers <benchmarks_vintages_and_layers>`
+
         :type layers: :class:`str <python:str>`
 
         :rtype: :class:`dict <python:dict>`
@@ -267,9 +302,9 @@ class GeographicEntity(BaseEntity):
                      city = None,
                      state = None,
                      zip_code = None,
-                     benchmark = 'CURRENT',
-                     vintage = 'CURRENT',
-                     layers = 'all'):
+                     benchmark = DEFAULT_BENCHMARK,
+                     vintage = DEFAULT_VINTAGE,
+                     layers = DEFAULT_LAYERS):
         """Return data from a :term:`parametrized address`.
 
         :param street_1: A street address, e.g. ``'4600 Silver Hill Rd'``. Defaults to
@@ -296,31 +331,54 @@ class GeographicEntity(BaseEntity):
           ``'20233'``. Defaults to :obj:`None <python:None>`.
         :type zip_code: :class:`str <python:str>` / :obj:`None <python:None>`
 
-        :param benchmark: The name of the :term:`benchmark` of data to return. Defaults to
-          ``'Current'`` which represents the current default benchmark, per the Census
-          Geocoder API. Accepts the following values:
+        :param benchmark: The name of the :term:`benchmark` of data to return. The default
+          value is determined by the ``CENSUS_GEOCODER_BENCHMARK`` environment variable,
+          and if that is not set defaults to ``'Current'`` which represents the current
+          default benchmark, per the `Census Geocoder API`_.
 
-          * ``'Current'`` (default)
-          * ``'TAB2020'``
-          * ``'Census2020'``
+          Accepts the following values:
+
+            * ``'Current'`` (default)
+            * ``'TAB2020'``
+            * ``'Census2020'``
 
         :type benchmark: :class:`str <python:str>`
 
-        :param vintage: The vintage of Census data for which data should be returned.
-          Defaults to ``'Current'`` which represents the current default vintage per the
-          Census Geocoder API. Accepts the following values:
+        :param vintage: The vintage of Census data for which data should be returned. The
+          default value is determined by the ``CENSUS_GEOCODER_VINTAGE`` environment
+          variable, and if that is not set defaults to ``'Current'`` which represents the
+          default vintage per the `Census Geocoder API`_.
 
-          * ``'Current'`` (default)
-          * ``'Census2020'``
-          * ``'ACS2019'``
-          * ``'ACS2018'``
-          * ``'ACS2017'``
-          * ``'Census2010'``
+          Acceptable values are dependent on the ``benchmark`` specified, as per the table below:
+
+            +--------------+---------------------+---------------------+---------------------+
+            |              |                          BENCHMARKS                             |
+            +              +---------------------+---------------------+---------------------+
+            |              | Current             | Census2020          | Tab2020             |
+            +==============+=====================+=====================+=====================+
+            | **VINTAGES** | Current             | Census2020          | Current             |
+            +              +---------------------+---------------------+---------------------+
+            |              | Census2020          | Census2010          | Census2020          |
+            +              +---------------------+---------------------+---------------------+
+            |              | ACS2019             |                     | ACS2019             |
+            +              +---------------------+---------------------+---------------------+
+            |              | ACS2018             |                     | ACS2018             |
+            +              +---------------------+---------------------+---------------------+
+            |              | ACS2017             |                     | ACS2017             |
+            +              +---------------------+---------------------+---------------------+
+            |              | Census2010          |                     | Census2010          |
+            +--------------+---------------------+---------------------+---------------------+
 
         :type vintage: :class:`str <python:str>`
 
-        :param layers: The set of geographic layers to return for the request. Defaults to
-          ``'all'``.
+        :param layers: The set of geographic layers to return for the request. The default
+          value is determined by the ``CENSUS_GEOCODER_LAYERS`` environment variable, and
+          if that is not set defaults to ``'all'``.
+
+            .. seealso::
+
+              * :doc:`Geographies <geographies>` :ref:`Benchmarks, Vintages, and Layers <benchmarks_vintages_and_layers>`
+
         :type layers: :class:`str <python:str>`
 
         :rtype: :class:`dict <python:dict>`
@@ -385,9 +443,9 @@ class GeographicEntity(BaseEntity):
     @classmethod
     def _get_batch_addresses(cls,
                              file_,
-                             benchmark = 'CURRENT',
-                             vintage = 'CURRENT',
-                             layers = 'all'):
+                             benchmark = DEFAULT_BENCHMARK,
+                             vintage = DEFAULT_VINTAGE,
+                             layers = DEFAULT_LAYERS):
         """Return data from a batch file in CSV, XLS/X, TXT, or DAT format.
 
         :param file_: The name of a file in CSV, XLS/X, DAT, or TXT format. Expects the
@@ -491,9 +549,9 @@ class GeographicEntity(BaseEntity):
     def _get_coordinates(cls,
                          longitude,
                          latitude,
-                         benchmark = 'CURRENT',
-                         vintage = 'CURRENT',
-                         layers = 'all'):
+                         benchmark = DEFAULT_BENCHMARK,
+                         vintage = DEFAULT_VINTAGE,
+                         layers = DEFAULT_LAYERS):
         """Return data from a pair of geographic coordinates (longitude / latitude).
 
         :param longitude: The longitude coordinate.
@@ -604,31 +662,54 @@ class GeographicEntity(BaseEntity):
           ``'20233'``. Defaults to :obj:`None <python:None>`.
         :type zip_code: :class:`str <python:str>` / :obj:`None <python:None>`
 
-        :param benchmark: The name of the :term:`benchmark` of data to return. Defaults to
-          ``'Current'`` which represents the current default benchmark, per the Census
-          Geocoder API. Accepts the following values:
+        :param benchmark: The name of the :term:`benchmark` of data to return. The default
+          value is determined by the ``CENSUS_GEOCODER_BENCHMARK`` environment variable,
+          and if that is not set defaults to ``'Current'`` which represents the current
+          default benchmark, per the `Census Geocoder API`_.
 
-          * ``'Current'`` (default)
-          * ``'TAB2020'``
-          * ``'Census2020'``
+          Accepts the following values:
+
+            * ``'Current'`` (default)
+            * ``'TAB2020'``
+            * ``'Census2020'``
 
         :type benchmark: :class:`str <python:str>`
 
-        :param vintage: The vintage of Census data for which data should be returned.
-          Defaults to ``'Current'`` which represents the current default vintage per the
-          Census Geocoder API. Accepts the following values:
+        :param vintage: The vintage of Census data for which data should be returned. The
+          default value is determined by the ``CENSUS_GEOCODER_VINTAGE`` environment
+          variable, and if that is not set defaults to ``'Current'`` which represents the
+          default vintage per the `Census Geocoder API`_.
 
-          * ``'Current'`` (default)
-          * ``'Census2020'``
-          * ``'ACS2019'``
-          * ``'ACS2018'``
-          * ``'ACS2017'``
-          * ``'Census2010'``
+          Acceptable values are dependent on the ``benchmark`` specified, as per the table below:
+
+            +--------------+---------------------+---------------------+---------------------+
+            |              |                          BENCHMARKS                             |
+            +              +---------------------+---------------------+---------------------+
+            |              | Current             | Census2020          | Tab2020             |
+            +==============+=====================+=====================+=====================+
+            | **VINTAGES** | Current             | Census2020          | Current             |
+            +              +---------------------+---------------------+---------------------+
+            |              | Census2020          | Census2010          | Census2020          |
+            +              +---------------------+---------------------+---------------------+
+            |              | ACS2019             |                     | ACS2019             |
+            +              +---------------------+---------------------+---------------------+
+            |              | ACS2018             |                     | ACS2018             |
+            +              +---------------------+---------------------+---------------------+
+            |              | ACS2017             |                     | ACS2017             |
+            +              +---------------------+---------------------+---------------------+
+            |              | Census2010          |                     | Census2010          |
+            +--------------+---------------------+---------------------+---------------------+
 
         :type vintage: :class:`str <python:str>`
 
-        :param layers: The set of geographic layers to return for the request. Defaults to
-          ``'all'``.
+        :param layers: The set of geographic layers to return for the request. The default
+          value is determined by the ``CENSUS_GEOCODER_LAYERS`` environment variable, and
+          if that is not set defaults to ``'all'``.
+
+            .. seealso::
+
+              * :doc:`Geographies <geographies>` :ref:`Benchmarks, Vintages, and Layers <benchmarks_vintages_and_layers>`
+
         :type layers: :class:`str <python:str>`
 
         .. note::
@@ -660,10 +741,10 @@ class GeographicEntity(BaseEntity):
         state = kwargs.get('state', None)
         zip_code = kwargs.get('zip_code', None)
 
-        benchmark = kwargs.get('benchmark', 'CURRENT')
-        vintage = kwargs.get('vintage', 'CURRENT')
+        benchmark = kwargs.get('benchmark', DEFAULT_BENCHMARK)
+        vintage = kwargs.get('vintage', DEFAULT_VINTAGE)
 
-        layers = kwargs.get('layers', 'all')
+        layers = kwargs.get('layers', DEFAULT_LAYERS)
 
         if one_line:
             result = cls._get_one_line(one_line,
@@ -698,31 +779,54 @@ class GeographicEntity(BaseEntity):
 
         :type file_: :class:`str <python:str>`
 
-        :param benchmark: The name of the :term:`benchmark` of data to return. Defaults to
-          ``'Current'`` which represents the current default benchmark, per the Census
-          Geocoder API. Accepts the following values:
+        :param benchmark: The name of the :term:`benchmark` of data to return. The default
+          value is determined by the ``CENSUS_GEOCODER_BENCHMARK`` environment variable,
+          and if that is not set defaults to ``'Current'`` which represents the current
+          default benchmark, per the `Census Geocoder API`_.
 
-          * ``'Current'`` (default)
-          * ``'TAB2020'``
-          * ``'Census2020'``
+          Accepts the following values:
+
+            * ``'Current'`` (default)
+            * ``'TAB2020'``
+            * ``'Census2020'``
 
         :type benchmark: :class:`str <python:str>`
 
-        :param vintage: The vintage of Census data for which data should be returned.
-          Defaults to ``'Current'`` which represents the current default vintage per the
-          Census Geocoder API. Accepts the following values:
+        :param vintage: The vintage of Census data for which data should be returned. The
+          default value is determined by the ``CENSUS_GEOCODER_VINTAGE`` environment
+          variable, and if that is not set defaults to ``'Current'`` which represents the
+          default vintage per the `Census Geocoder API`_.
 
-          * ``'Current'`` (default)
-          * ``'Census2020'``
-          * ``'ACS2019'``
-          * ``'ACS2018'``
-          * ``'ACS2017'``
-          * ``'Census2010'``
+          Acceptable values are dependent on the ``benchmark`` specified, as per the table below:
+
+            +--------------+---------------------+---------------------+---------------------+
+            |              |                          BENCHMARKS                             |
+            +              +---------------------+---------------------+---------------------+
+            |              | Current             | Census2020          | Tab2020             |
+            +==============+=====================+=====================+=====================+
+            | **VINTAGES** | Current             | Census2020          | Current             |
+            +              +---------------------+---------------------+---------------------+
+            |              | Census2020          | Census2010          | Census2020          |
+            +              +---------------------+---------------------+---------------------+
+            |              | ACS2019             |                     | ACS2019             |
+            +              +---------------------+---------------------+---------------------+
+            |              | ACS2018             |                     | ACS2018             |
+            +              +---------------------+---------------------+---------------------+
+            |              | ACS2017             |                     | ACS2017             |
+            +              +---------------------+---------------------+---------------------+
+            |              | Census2010          |                     | Census2010          |
+            +--------------+---------------------+---------------------+---------------------+
 
         :type vintage: :class:`str <python:str>`
 
-        :param layers: The set of geographic layers to return for the request. Defaults to
-          ``'all'``.
+        :param layers: The set of geographic layers to return for the request. The default
+          value is determined by the ``CENSUS_GEOCODER_LAYERS`` environment variable, and
+          if that is not set defaults to ``'all'``.
+
+            .. seealso::
+
+              * :doc:`Geographies <geographies>` :ref:`Benchmarks, Vintages, and Layers <benchmarks_vintages_and_layers>`
+
         :type layers: :class:`str <python:str>`
 
         :returns: A collection of geographic entities.
@@ -748,10 +852,10 @@ class GeographicEntity(BaseEntity):
 
         file_ = validators.file_exists(file_, allow_empty = False)
 
-        benchmark = kwargs.get('benchmark', 'CURRENT')
-        vintage = kwargs.get('vintage', 'CURRENT')
+        benchmark = kwargs.get('benchmark', DEFAULT_BENCHMARK)
+        vintage = kwargs.get('vintage', DEFAULT_VINTAGE)
 
-        layers = kwargs.get('layers', 'all')
+        layers = kwargs.get('layers', DEFAULT_LAYERS)
 
         result = cls._from_batch_file(file_ = file_,
                                       benchmark = benchmark,
@@ -772,31 +876,54 @@ class GeographicEntity(BaseEntity):
         :param latitude: The latitude coordinate.
         :type latitude: numeric
 
-        :param benchmark: The name of the :term:`benchmark` of data to return. Defaults to
-          ``'Current'`` which represents the current default benchmark, per the Census
-          Geocoder API. Accepts the following values:
+        :param benchmark: The name of the :term:`benchmark` of data to return. The default
+          value is determined by the ``CENSUS_GEOCODER_BENCHMARK`` environment variable,
+          and if that is not set defaults to ``'Current'`` which represents the current
+          default benchmark, per the `Census Geocoder API`_.
 
-          * ``'Current'`` (default)
-          * ``'TAB2020'``
-          * ``'Census2020'``
+          Accepts the following values:
+
+            * ``'Current'`` (default)
+            * ``'TAB2020'``
+            * ``'Census2020'``
 
         :type benchmark: :class:`str <python:str>`
 
-        :param vintage: The vintage of Census data for which data should be returned.
-          Defaults to ``'Current'`` which represents the current default vintage per the
-          Census Geocoder API. Accepts the following values:
+        :param vintage: The vintage of Census data for which data should be returned. The
+          default value is determined by the ``CENSUS_GEOCODER_VINTAGE`` environment
+          variable, and if that is not set defaults to ``'Current'`` which represents the
+          default vintage per the `Census Geocoder API`_.
 
-          * ``'Current'`` (default)
-          * ``'Census2020'``
-          * ``'ACS2019'``
-          * ``'ACS2018'``
-          * ``'ACS2017'``
-          * ``'Census2010'``
+          Acceptable values are dependent on the ``benchmark`` specified, as per the table below:
+
+            +--------------+---------------------+---------------------+---------------------+
+            |              |                          BENCHMARKS                             |
+            +              +---------------------+---------------------+---------------------+
+            |              | Current             | Census2020          | Tab2020             |
+            +==============+=====================+=====================+=====================+
+            | **VINTAGES** | Current             | Census2020          | Current             |
+            +              +---------------------+---------------------+---------------------+
+            |              | Census2020          | Census2010          | Census2020          |
+            +              +---------------------+---------------------+---------------------+
+            |              | ACS2019             |                     | ACS2019             |
+            +              +---------------------+---------------------+---------------------+
+            |              | ACS2018             |                     | ACS2018             |
+            +              +---------------------+---------------------+---------------------+
+            |              | ACS2017             |                     | ACS2017             |
+            +              +---------------------+---------------------+---------------------+
+            |              | Census2010          |                     | Census2010          |
+            +--------------+---------------------+---------------------+---------------------+
 
         :type vintage: :class:`str <python:str>`
 
-        :param layers: The set of geographic layers to return for the request. Defaults to
-          ``'all'``.
+        :param layers: The set of geographic layers to return for the request. The default
+          value is determined by the ``CENSUS_GEOCODER_LAYERS`` environment variable, and
+          if that is not set defaults to ``'all'``.
+
+            .. seealso::
+
+              * :doc:`Geographies <geographies>` :ref:`Benchmarks, Vintages, and Layers <benchmarks_vintages_and_layers>`
+
         :type layers: :class:`str <python:str>`
 
         .. note::
@@ -837,10 +964,10 @@ class GeographicEntity(BaseEntity):
         longitude = validators.decimal(longitude, allow_empty = False)
         latitude = validators.decimal(latitude, allow_empty = False)
 
-        benchmark = kwargs.get('benchmark', 'CURRENT')
-        vintage = kwargs.get('vintage', 'CURRENT')
+        benchmark = kwargs.get('benchmark', DEFAULT_BENCHMARK)
+        vintage = kwargs.get('vintage', DEFAULT_VINTAGE)
 
-        layers = kwargs.get('layers', 'all')
+        layers = kwargs.get('layers', DEFAULT_LAYERS)
 
         result = cls._get_coordinates(longitude = longitude,
                                       latitude = latitude,
