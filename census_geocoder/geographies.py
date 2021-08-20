@@ -6,7 +6,7 @@ census_geocoder/geographies.py
 Defines :class:`Geography` geographic entities.
 
 """
-from validator_collection import validators
+from validator_collection import validators, checkers
 
 from census_geocoder import metaclasses
 from census_geocoder.constants import FUNCSTAT, LSAD
@@ -898,6 +898,198 @@ class Geography(metaclasses.GeographicEntity):
 
         return result
 
+    def inspect(self, as_census_fields = False):
+        """Produce a list of the geographic area's properties that have values.
+
+        :param as_census_fields: If ``True``, return property names as they appear in
+          Census databases or the output of the `Census Geocoder API`_. If ``False``,
+          return properties as they are defined on the **Census Geocoder** objects.
+          Defaults to ``False``.
+        :type as_census_fields: :class:`bool <python:bool>`
+
+        :rtype: :class:`list <python:list>` of :class:`str <python:str>`
+        """
+        result = []
+
+        if self.geoid and as_census_fields:
+            result.append('GEOID')
+        elif self.geoid:
+            result.append('geoid')
+
+        if self.oid and as_census_fields:
+            result.append('OID')
+        elif self.oid:
+            result.append('oid')
+
+        if self.object_id and as_census_fields:
+            result.append('OBJECTID')
+        elif self.object_id:
+            result.append('object_id')
+
+        if self.name and as_census_fields:
+            result.append('NAME')
+        elif self.name:
+            result.append('name')
+        if self.basename and as_census_fields:
+            result.append('BASENAME')
+        elif self.basename:
+            result.append('basename')
+
+        if self.funcstat and as_census_fields:
+            result.append('FUNCSTAT')
+        elif self.funcstat:
+            result.append('funcstat')
+        if self.functional_status and not as_census_fields:
+            result.append('functional_status')
+
+        if self.lsad and as_census_fields:
+            result.append('LSAD')
+        elif self.lsad:
+            result.append('lsad')
+        if self.legal_statistical_area and not as_census_fields:
+            result.append('legal_statistical_area')
+        if self.lsad_category and not as_census_fields:
+            result.append('lsad_category')
+
+        if self.legislative_session_year and as_census_fields:
+            result.append('LSY')
+        elif self.legislative_session_year:
+            result.append('legislative_session_year')
+
+        if self.state_fips_code and as_census_fields:
+            result.append('STATE')
+        elif self.state_fips_code:
+            result.append('state_fips_code')
+        if self.state_ns and as_census_fields:
+            result.append('STATENS')
+        elif self.state_ns:
+            result.append('state_ns')
+        if self.state_abbreviation and as_census_fields:
+            result.append('STUSAB')
+        elif self.state_abbreviation:
+            result.append('state_abbreviation')
+
+        if self.division_fips_code and as_census_fields:
+            result.append('DIVISION')
+        elif self.division_fips_code:
+            result.append('division_fips_code')
+        if self.region_fips_code and as_census_fields:
+            result.append('REGION')
+        elif self.region_fips_code:
+            result.append('region_fips_code')
+
+        if self.tract and as_census_fields:
+            result.append('TRACT')
+        elif self.tract:
+            result.append('tract')
+        if self.block and as_census_fields:
+            result.append('BLOCK')
+        elif self.block:
+            result.append('block')
+        if self.block_group and as_census_fields:
+            result.append('BLKGRP')
+        elif self.block_group:
+            result.append('block_group')
+
+        if self.county_fips_code and as_census_fields:
+            result.append('COUNTY')
+        elif self.county_fips_code:
+            result.append('county_fips_code')
+        if self.county_ns and as_census_fields:
+            result.append('COUNTYNS')
+        elif self.county_ns:
+            result.append('county_ns')
+        if self.county_cc and as_census_fields:
+            result.append('COUNTYCC')
+        elif self.county_cc:
+            result.append('county_cc')
+
+        if self.place_fips_code and as_census_fields:
+            result.append('PLACE')
+        elif self.place_fips_code:
+            result.append('place_fips_code')
+        if self.place_ns and as_census_fields:
+            result.append('PLACENS')
+        elif self.place_ns:
+            result.append('place_ns')
+        if self.place_cc and as_census_fields:
+            result.append('PLACECC')
+        elif self.place_cc:
+            result.append('place_cc')
+
+        if self.necta_pci and as_census_fields:
+            result.append('NECTAPCI')
+        elif self.necta_pci:
+            result.append('necta_pci')
+        if self.cbsa_pci and as_census_fields:
+            result.append('CBSAPCI')
+        elif self.cbsa_pci:
+            result.append('cbsa_pci')
+
+        if self.congressional_session_code and as_census_fields:
+            result.append('CDSESSN')
+        elif self.congressional_session_code:
+            result.append('congressional_session_code')
+
+        if self.zcta5 and as_census_fields:
+            result.append('ZCTA5')
+        elif self.zcta5:
+            result.append('zcta5')
+        if self.zcta5_cc and as_census_fields:
+            result.append('ZCTA5CC')
+        elif self.zcta5_cc:
+            result.append('zcta5_cc')
+
+        if self.school_district_type and as_census_fields:
+            result.append('SDTYP')
+        elif self.school_district_type:
+            result.append('school_district_type')
+        if self.low_school_grade and as_census_fields:
+            result.append('LOGRADE')
+        elif self.low_school_grade:
+            result.append('low_school_grade')
+        if self.high_school_grade and as_census_fields:
+            result.append('HIGRADE')
+        elif self.high_school_grade:
+            result.append('high_school_grade')
+
+        if self.csa and as_census_fields:
+            result.append('CSA')
+        elif self.csa:
+            result.append('csa')
+        if self.cbsa and as_census_fields:
+            result.append('CBSA')
+        elif self.cbsa:
+            result.append('cbsa')
+
+        if self.longitude and as_census_fields:
+            result.append('CENTLON')
+        elif self.longitude:
+            result.append('longitude')
+        if self.latitude and as_census_fields:
+            result.append('CENTLAT')
+        elif self.latitude:
+            result.append('latitude')
+        if self.longitude_internal_point and as_census_fields:
+            result.append('INTPTLON')
+        elif self.longitude_internal_point:
+            result.append('longitude_internal_point')
+        if self.latitude_internal_point and as_census_fields:
+            result.append('INTPTLAT')
+        elif self.latitude_internal_point:
+            result.append('latitude_internal_point')
+
+        if self.water_area and as_census_fields:
+            result.append('AREAWATER')
+        elif self.water_area:
+            result.append('water_area')
+        if self.land_area and as_census_fields:
+            result.append('AREALAND')
+        elif self.land_area:
+            result.append('land_area')
+
+        return result
+
 
 class StateLegislativeDistrictLower(Geography):
     """State Legislative District - Lower"""
@@ -1109,6 +1301,17 @@ class GeographyCollection(metaclasses.BaseEntity):
         self._cdp = []
 
         self = self.from_dict(kwargs)
+
+    def __len__(self):
+        cls = self.__class__
+        potential_properties = [x for x in dir(cls)
+                                if not x.startswith('_')]
+        result = 0
+        for item in potential_properties:
+            if checkers.is_type(getattr(cls, item), 'property'):
+                result += len(getattr(self, item))
+
+        return result
 
     @property
     def regions(self):

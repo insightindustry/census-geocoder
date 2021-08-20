@@ -36,9 +36,100 @@ class MatchedAddress(metaclasses.BaseEntity):
         self._state = None
         self._zip_code = None
 
+        self._geographies = None
+
         for key in kwargs:
             if hasattr(self, key):
                 setattr(self, key, kwargs.get(key, None))
+
+    def inspect(self, as_census_fields = False):
+        """Produce a list of the matched address properties that have values.
+
+        :param as_census_fields: If ``True``, return property names as they appear in
+          Census databases or the output of the `Census Geocoder API`_. If ``False``,
+          return properties as they are defined on the **Census Geocoder** objects.
+          Defaults to ``False``.
+        :type as_census_fields: :class:`bool <python:bool>`
+
+        :rtype: :class:`list <python:list>` of :class:`str <python:str>`
+        """
+        result = []
+        if self.address and as_census_fields:
+            result.append('matchedAddress')
+        elif self.address:
+            result.append('address')
+
+        if self.latitude and as_census_fields:
+            result.append('coordinates.y')
+        elif self.latitude:
+            result.append('latitude')
+        if self.longitude and as_census_fields:
+            result.append('coordinates.x')
+        elif self.longitude:
+            result.append('longitude')
+
+        if self.tigerline_id and as_census_fields:
+            result.append('tigerLine.tigerLineId')
+        elif self.tigerline_id:
+                result.append('tigerline_id')
+        if self.tigerline_side and as_census_fields:
+            result.append('tigerLine.side')
+        elif self.tigerline_side:
+            result.append('tigerline_side')
+
+        if self.from_address and as_census_fields:
+            result.append('addressComponents.fromAddress')
+        elif self.from_address:
+            result.append('from_address')
+        if self.to_address and as_census_fields:
+            result.append('addressComponents.toAddress')
+        elif self.to_address:
+            result.append('to_address')
+        if self.street and as_census_fields:
+            result.append('addressComponents.streetName')
+        elif self.street:
+            result.append('street')
+        if self.pre_type and as_census_fields:
+            result.append('addressComponents.preType')
+        elif self.pre_type:
+            result.append('pre_type')
+        if self.pre_direction and as_census_fields:
+            result.append('addressComponents.preDirection')
+        elif self.pre_direction:
+            result.append('pre_direction')
+        if self.pre_qualifier and as_census_fields:
+            result.append('addressComponents.preQualifier')
+        elif self.pre_qualifier:
+            result.append('pre_qualifier')
+        if self.suffix_type and as_census_fields:
+            result.append('addressComponents.suffixType')
+        elif self.suffix_type:
+            result.append('suffix_type')
+        if self.suffix_direction and as_census_fields:
+            result.append('addressComponents.suffixDirection')
+        elif self.suffix_direction:
+            result.append('suffix_direction')
+        if self.suffix_qualifier and as_census_fields:
+            result.append('addressComponents.suffixQualifier')
+        elif self.suffix_qualifier:
+            result.append('suffix_qualifier')
+        if self.city and as_census_fields:
+            result.append('addressComponents.city')
+        elif self.city:
+            result.append('city')
+        if self.state and as_census_fields:
+            result.append('addressComponents.state')
+        elif self.state:
+            result.append('state')
+        if self.zip_code and as_census_fields:
+            result.append('addressComponents.zip')
+        elif self.zip_code:
+            result.append('zip_code')
+
+        if self.geographies:
+            result.append('geographies')
+
+        return result
 
     @property
     def tigerline_id(self):
@@ -255,6 +346,28 @@ class MatchedAddress(metaclasses.BaseEntity):
         self._zip_code = validators.string(value, allow_empty = True)
 
     @property
+    def geographies(self):
+        """Collection of geographical areas that this address is part of.
+
+        :rtype: :class:`GeographyCollection` / :obj:`None <python:None>`
+
+        """
+        return self._geographies
+
+    @geographies.setter
+    def geographies(self, value):
+        if value and not isinstance(value, geographies.GeographyCollection):
+            value = validators.dict(value, allow_empty = False)
+            geographies = geographies.GeographyCollection.from_dict(value)
+        elif value:
+            geographies = value
+        else:
+            geographies = None
+
+        self._geographies = geographies
+
+
+    @property
     def entity_type(self):
         return 'address'
 
@@ -466,6 +579,88 @@ class Location(metaclasses.GeographicEntity):
             if hasattr(self, key):
                 setattr(self, key, kwargs.get(key, None))
 
+    def inspect(self, as_census_fields = False):
+        """Produce a list of the location's properties that have values.
+
+        :param as_census_fields: If ``True``, return property names as they appear in
+          Census databases or the output of the `Census Geocoder API`_. If ``False``,
+          return properties as they are defined on the **Census Geocoder** objects.
+          Defaults to ``False``.
+        :type as_census_fields: :class:`bool <python:bool>`
+
+        :rtype: :class:`list <python:list>` of :class:`str <python:str>`
+        """
+        result = []
+        if self.input_one_line and as_census_fields:
+            result.append('input.address')
+        elif self.input_one_line:
+            result.append('input_one_line')
+
+        if self.input_street and as_census_fields:
+            result.append('input.address.street')
+        elif self.input_street:
+            result.append('input_street')
+
+        if self.input_city and as_census_fields:
+            result.append('input.address.city')
+        elif self.input_city:
+            result.append('input_city')
+
+        if self.input_state and as_census_fields:
+            reuslt.append('input.address.state')
+        elif self.input_state:
+            reuslt.append('input_state')
+
+        if self.input_zip_code and as_census_fields:
+            result.append('input.address.zip')
+        elif self.input_zip_code:
+            result.append('input_zip_code')
+
+        if self.benchmark_name and as_census_fields:
+            result.append('benchmark.benchmarkName')
+        elif self.benchmark_name:
+            result.append('benchmark_name')
+        if self.benchmark_description and as_census_fields:
+            result.append('benchmark.benchmarkDescription')
+        elif self.benchmark_description:
+            result.append('benchmark_description')
+        if self.benchmark_id and as_census_fields:
+            result.append('benchmark.id')
+        elif self.benchmark_id:
+            result.append('benchmark_id')
+        if as_census_fields:
+            result.append('benchmark.isDefault')
+        else:
+            result.append('benchmark_is_default')
+        if self.benchmark:
+            result.append('benchmark')
+
+        if self.vintage_name and as_census_fields:
+            result.append('vintage.vintageName')
+        elif self.vintage_name:
+            result.append('vintage_name')
+        if self.vintage_description and as_census_fields:
+            result.append('vintage.vintageDescription')
+        elif self.vintage_description:
+            result.append('vintage_description')
+        if self.vintage_id and as_census_fields:
+            result.append('vintage.id')
+        elif self.vintage_id:
+            result.append('vintage_id')
+        if as_census_fields:
+            result.append('vintage.isDefault')
+        else:
+            result.append('vintage_is_default')
+        if self.vintage:
+            result.append('vintage')
+
+        if self.matched_addresses and as_census_fields:
+            result.append('addressMatches')
+        elif self.matched_addresses:
+            result.append('matched_addresses')
+
+        return result
+
     @property
     def input_one_line(self):
         """The one-line address that was provided as input to get this :class:`Location`.
@@ -600,8 +795,8 @@ class Location(metaclasses.GeographicEntity):
 
     @property
     def benchmark(self):
-        """The short-hand value of the benchmark for which this :class:`Location` was
-        calculated.
+        """The short-hand value of the :term:`benchmark` for which this :class:`Location`
+        was calculated.
 
         :rtype: :class:`str <python:str>` / :obj:`None <python:None>`
         """
@@ -658,6 +853,22 @@ class Location(metaclasses.GeographicEntity):
     @vintage_is_default.setter
     def vintage_is_default(self, value):
         self._vintage_is_default = bool(value)
+
+    @property
+    def vintage(self):
+        """The short-hand value of the :term:`vintage` for which this :class:`Location`
+        was calculated.
+
+        :rtype: :class:`str <python:str>` / :obj:`None <python:None>`
+        """
+        for key in constants.VINTAGES:
+            if key == self.benchmark_name:
+                vintage_set = constants.VINTAGES.get(key, {})
+                for vintage_key in vintage_set:
+                    if vintage_set.get(vintage_key, None) == self.vintage_name:
+                        return vintage_key
+
+        return None
 
     @property
     def matched_addresses(self):

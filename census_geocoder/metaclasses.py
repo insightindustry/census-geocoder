@@ -979,3 +979,16 @@ class GeographicEntity(BaseEntity):
                                       layers = layers)
 
         return cls.from_json(result)
+
+    def inspect(self, as_census_fields = False):
+        """Produce a list of the entity's properties that have values.
+
+        :param as_census_fields: If ``True``, return property names as they appear in
+          Census databases or the output of the `Census Geocoder API`_. If ``False``,
+          return properties as they are defined on the **Census Geocoder** objects.
+          Defaults to ``False``.
+        :type as_census_fields: :class:`bool <python:bool>`
+
+        :rtype: :class:`list <python:list>` of :class:`str <python:str>`
+        """
+        raise NotImplementedError()
