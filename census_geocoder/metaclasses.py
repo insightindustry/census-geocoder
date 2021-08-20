@@ -73,10 +73,13 @@ def parse_benchmark_vintage_layers(benchmark = DEFAULT_BENCHMARK,
         layer_set = LAYERS.get(vintage, None)
         if layer_set:
             layer_targets = layers.split(',')
+            layer_targets = [strip(x) for x in layer_targets]
             layers = []
             for layer in layer_targets:
-                if layer in layer_set:
-                    layers.append(layer_set.get(layer, None))
+                layer_lower = layer.lower()
+                layer_set_lowercase = [x.lower() for x in layer_set]
+                if layer_lower in layer_set_lowercase:
+                    layers.append(layer_set_lowercase.get(layer_lower, None))
             layers = ','.join(layers)
         else:
             layers = None
