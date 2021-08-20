@@ -488,6 +488,89 @@ class GeographicEntity(BaseEntity):
         return csv_list
 
     @classmethod
+    def _get_coordinates(cls,
+                         longitude,
+                         latitude,
+                         benchmark = 'CURRENT',
+                         vintage = 'CURRENT',
+                         layers = 'all'):
+        """Return data from a pair of geographic coordinates (longitude / latitude).
+
+        :param longitude: The longitude coordinate.
+        :type longitude: numeric
+
+        :param latitude: The latitude coordinate.
+        :type latitude: numeric
+
+        :param benchmark: The name of the :term:`benchmark` of data to return. Defaults to
+          ``'Current'`` which represents the current default benchmark, per the Census
+          Geocoder API. Accepts the following values:
+
+          * ``'Current'`` (default)
+          * ``'TAB2020'``
+          * ``'Census2020'``
+
+        :type benchmark: :class:`str <python:str>`
+
+        :param vintage: The vintage of Census data for which data should be returned.
+          Defaults to ``'Current'`` which represents the current default vintage per the
+          Census Geocoder API. Accepts the following values:
+
+          * ``'Current'`` (default)
+          * ``'Census2020'``
+          * ``'ACS2019'``
+          * ``'ACS2018'``
+          * ``'ACS2017'``
+          * ``'Census2010'``
+
+        :type vintage: :class:`str <python:str>`
+
+        :param layers: The set of geographic layers to return for the request. Defaults to
+          ``'all'``.
+        :type layers: :class:`str <python:str>`
+
+        :rtype: :class:`dict <python:dict>`
+
+        :raises CensusAPIError: if the Census Geocoder API returned an error
+        :raises UnrecognizedBenchmarkError: if the ``benchmark`` supplied is not
+          recognized
+        :raises UnrecognizedVintageError: if the ``vintage`` supplied is not recognized
+
+        """
+        longitude = validators.decimal(longitude, allow_empty = False)
+        latitude = validators.decimal(latitude, allow_empty = False)
+
+        benchmark, vintage, layers = parse_benchmark_vintage_layers(benchmark,
+                                                                    vintage,
+                                                                    layers)
+
+        parameters = {
+            'x': '{0:f}'.format(str(longitude)),
+            'y': '{0:f}'.format(str(latitude)),
+            'benchmark': benchmark,
+            'vintage': vintage,
+            'format': 'json'
+        }
+        if layers:
+            parameters['layers'] = layers
+
+        url = f'{CENSUS_API_URL}/geocoder/{cls.entity_type}/coordinates'
+
+        result = backoff(requests.get,
+                         args = [url],
+                         kwargs = {'params': parameters},
+                         max_tries = 5,
+                         max_delay = 10)
+
+        if result.status_code >= 400:
+            raise errors.CensusAPIError(
+                f'Census Geocoder API returned status code {result.status_code} with '
+                f'message: "{result.text}".'
+            )
+
+        return result.json()
+
+    @classmethod
     def from_address(cls, *args, **kwargs):
         """Return data from an adddress, supplied either as a single
         :term:`one-line address` or a :term:`parametrized address`.
@@ -676,3 +759,93 @@ class GeographicEntity(BaseEntity):
                                       layers = layers)
 
         return [cls.from_list_item[x] for x in result]
+
+    @classmethod
+    def from_coordinates(cls,
+                         *args,
+                         **kwargs):
+        """Return data from a pair of geographic coordinates (longitude and latitude).
+
+        :param longitude: The longitude coordinate.
+        :type longitude: numeric
+
+        :param latitude: The latitude coordinate.
+        :type latitude: numeric
+
+        :param benchmark: The name of the :term:`benchmark` of data to return. Defaults to
+          ``'Current'`` which represents the current default benchmark, per the Census
+          Geocoder API. Accepts the following values:
+
+          * ``'Current'`` (default)
+          * ``'TAB2020'``
+          * ``'Census2020'``
+
+        :type benchmark: :class:`str <python:str>`
+
+        :param vintage: The vintage of Census data for which data should be returned.
+          Defaults to ``'Current'`` which represents the current default vintage per the
+          Census Geocoder API. Accepts the following values:
+
+          * ``'Current'`` (default)
+          * ``'Census2020'``
+          * ``'ACS2019'``
+          * ``'ACS2018'``
+          * ``'ACS2017'``
+          * ``'Census2010'``
+
+        :type vintage: :class:`str <python:str>`
+
+        :param layers: The set of geographic layers to return for the request. Defaults to
+          ``'all'``.
+        :type layers: :class:`str <python:str>`
+
+        .. note::
+
+          If more than one address-related parameter are supplied, this method will assume
+          that a :term:`parametrized address` is provided.
+
+        :returns: A given geographic entity.
+        :rtype: :class:`GeographicEntity`
+
+        :raises NoAddressError: if no address information is supplied
+        :raises EntityNotFound: if no geographic entity was found matching the address
+          supplied
+        :raises UnrecognizedBenchmarkError: if the ``benchmark`` supplied is not
+          recognized
+        :raises UnrecognizedVintageError: if the ``vintage`` supplied is not recognized
+
+        """
+        if not args and not kwargs:
+            raise errors.NoAddressError('No coordinates supplied.')
+
+        try:
+            longitude = args[0]
+        except (IndexError, TypeError):
+            longitude = kwargs.get('longitude', None)
+        try:
+            latitude = args[1]
+        except (IndexError, TypeError):
+            latitude = kwargs.get('latitude', None)
+
+        if not longitude and not latitude:
+            raise errors.NoAddressError('No coordinates supplied.')
+        elif not longitude:
+            raise errors.NoAddressError('No longitude supplied.')
+        elif not latitude:
+            raise errors.NoAddressError('No latitude supplied.')
+
+        longitude = validators.decimal(longitude, allow_empty = False)
+        latitude = validators.decimal(latitude, allow_empty = False)
+
+        benchmark = kwargs.get('benchmark', 'CURRENT')
+        vintage = kwargs.get('vintage', 'CURRENT')
+
+        layers = kwargs.get('layers', 'all')
+
+        result = cls._get_coordinates(longitude = longitude,
+                                      latitude = latitude,
+                                      benchmark = benchmark,
+                                      vintage = vintage,
+                                      layers = layers)
+
+        return cls.from_json(result)
