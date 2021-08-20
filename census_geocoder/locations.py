@@ -8,7 +8,7 @@ Defines :class:`Location` and :class:`MatchedAddress` geographic entities.
 """
 from validator_collection import validators, checkers
 
-from census_geocoder import errors, metaclasses, geographies
+from census_geocoder import metaclasses, geographies
 
 
 class MatchedAddress(metaclasses.BaseEntity):

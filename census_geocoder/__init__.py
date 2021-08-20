@@ -7,7 +7,7 @@ child modules.
 """
 
 import os
-from census_geocoder import locations, geographies
+from census_geocoder import locations, geographies, errors
 
 # Get the version number from the _version.py file
 version_dict = {}
@@ -24,5 +24,6 @@ matched_address = locations.MatchedAddress
 __all__ = [
     'location',
     'geography',
-    'matched_address'
+    'matched_address',
+    'errors'
 ]
