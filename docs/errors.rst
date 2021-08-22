@@ -90,3 +90,5 @@ CensusGeocoderWarning (from :class:`UserWarning <python:UserWarning>`)
 ------------------------------------------------------------------------
 
 .. autoclass:: CensusGeocoderWarning
+
+.. _Census Geocoder API: https://geocoding.geo.census.gov/geocoder/

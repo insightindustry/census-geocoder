@@ -121,14 +121,14 @@ cases, so here's how we think about them:
 
       This is a useful feature, and one that I have added/pinned for the
       **US Census Geocoder**. If there are enough requests / up-votes on the
-      `issue https://github.com/insightindustry/census-geocoder/issues/2`_, I may
+      `issue <https://github.com/insightindustry/census-geocoder/issues/2>`_, I may
       extend the library with this support in the future.
 
       Given all this, it may be worth using `CensusBatchGeocoder`_ instead of the
       **US Census Geocoder** if you expect to be doing a lot of bulk operations using the
       default benchmark/vintage/layers.
 
-  .. tab:: geocoder / geopy
+  .. tab:: geocoder/geopy
 
     `geocoder`_ and `geopy`_ are two of my favorite geocoding libraries in the Python
     ecosystem. They are both inherently pythonic, elegant, easy to use, and support most
