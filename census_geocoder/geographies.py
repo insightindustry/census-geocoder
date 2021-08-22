@@ -6,9 +6,11 @@ census_geocoder/geographies.py
 Defines :class:`Geography` geographic entities.
 
 """
+from inspect import currentframe
+
 from validator_collection import validators, checkers
 
-from census_geocoder import metaclasses
+from census_geocoder import metaclasses, errors
 from census_geocoder.constants import FUNCSTAT, LSAD
 
 
@@ -1091,6 +1093,24 @@ class GeographicArea(metaclasses.GeographicEntity):
         return result
 
 
+class PUMA(GeographicArea):
+    """Public Use Microdata Area"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Public Use Microdata Area'
+
+
+class PUMA_2010(PUMA):
+    """2010 Census Public Use Microdata Area"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '2010 Census Public Use Microdata Area'
+
+
 class StateLegislativeDistrictLower(GeographicArea):
     """State Legislative District - Lower"""
 
@@ -1107,6 +1127,78 @@ class StateLegislativeDistrictUpper(GeographicArea):
     def geography_type(self):
         """Returns the Geography Type for the given geography."""
         return 'State Legislative District - Upper'
+
+
+class StateLegislativeDistrictLower_2018(StateLegislativeDistrictLower):
+    """2018 State Legislative District - Lower"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '2018 State Legislative District - Lower'
+
+
+class StateLegislativeDistrictUpper_2018(StateLegislativeDistrictUpper):
+    """2018 State Legislative District - Upper"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '2018 State Legislative District - Upper'
+
+
+class StateLegislativeDistrictLower_2016(StateLegislativeDistrictLower):
+    """2016 State Legislative District - Lower"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '2016 State Legislative District - Lower'
+
+
+class StateLegislativeDistrictUpper_2016(StateLegislativeDistrictUpper):
+    """2016 State Legislative District - Upper"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '2016 State Legislative District - Upper'
+
+
+class StateLegislativeDistrictLower_2012(StateLegislativeDistrictLower):
+    """2012 State Legislative District - Lower"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '2012 State Legislative District - Lower'
+
+
+class StateLegislativeDistrictUpper_2012(StateLegislativeDistrictUpper):
+    """2012 State Legislative District - Upper"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '2012 State Legislative District - Upper'
+
+
+class StateLegislativeDistrictLower_2010(StateLegislativeDistrictLower):
+    """2010 State Legislative District - Lower"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '2010 State Legislative District - Lower'
+
+
+class StateLegislativeDistrictUpper_2010(StateLegislativeDistrictUpper):
+    """2010 State Legislative District - Upper"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '2010 State Legislative District - Upper'
 
 
 class County(GeographicArea):
@@ -1127,6 +1219,24 @@ class ZCTA5(GeographicArea):
         return 'Zip Code Tabulation Area'
 
 
+class ZCTA_2010(ZCTA5):
+    """2010 Zip Code Tabulation Areas"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '2010 Census ZIP Code Tabulation Area'
+
+
+class ZCTA_2020(ZCTA5):
+    """2020 Zip Code Tabulation Areas"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '2020 Census ZIP Code Tabulation Area'
+
+
 class UnifiedSchoolDistrict(GeographicArea):
     """Unified School District"""
 
@@ -1134,6 +1244,24 @@ class UnifiedSchoolDistrict(GeographicArea):
     def geography_type(self):
         """Returns the Geography Type for the given geography."""
         return 'Unified School District'
+
+
+class SecondarySchoolDistrict(GeographicArea):
+    """Secondary School District"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Secondary School District'
+
+
+class ElementarySchoolDistrict(GeographicArea):
+    """Elementary School District"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Elementary School District'
 
 
 class VotingDistrict(GeographicArea):
@@ -1172,6 +1300,15 @@ class CensusBlockGroup(GeographicArea):
         return 'Census Block Group'
 
 
+class TribalCensusBlockGroup(CensusBlockGroup):
+    """Tribal Census Block Group"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Tribal Census Block Group'
+
+
 class CombinedStatisticalArea(GeographicArea):
     """Combined Statistical Area"""
 
@@ -1188,6 +1325,15 @@ class CountySubDivision(GeographicArea):
     def geography_type(self):
         """Returns the Geography Type for the given geography."""
         return 'County Sub-division'
+
+
+class TribalSubDivision(GeographicArea):
+    """Tribal Sub-division"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Tribal Sub-division'
 
 
 class CensusDesignatedPlace(GeographicArea):
@@ -1217,6 +1363,42 @@ class CongressionalDistrict(GeographicArea):
         return 'Congressional District'
 
 
+class CongressionalDistrict_116(CongressionalDistrict):
+    """116th Congressional District"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '116th Congressional District'
+
+
+class CongressionalDistrict_115(CongressionalDistrict):
+    """115th Congressional District"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '115th Congressional District'
+
+
+class CongressionalDistrict_113(CongressionalDistrict):
+    """113th Congressional District"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '113th Congressional District'
+
+
+class CongressionalDistrict_111(CongressionalDistrict):
+    """111th Congressional District"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '111th Congressional District'
+
+
 class CensusRegion(GeographicArea):
     """Census Region"""
 
@@ -1235,6 +1417,15 @@ class MetropolitanStatisticalArea(GeographicArea):
         return 'Metropolitan Statistical Area'
 
 
+class MicropolitanStatisticalArea(GeographicArea):
+    """Micropolitan Statistical Area"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Micropolitan Statistical Area'
+
+
 class CensusBlock(GeographicArea):
     """Census Block"""
 
@@ -1242,6 +1433,15 @@ class CensusBlock(GeographicArea):
     def geography_type(self):
         """Returns the Geography Type for the given geography."""
         return 'Census Block'
+
+
+class CensusBlock_2020(CensusBlock):
+    """2020 Census Blocks"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '2020 Census Block'
 
 
 class CensusTract(GeographicArea):
@@ -1253,87 +1453,447 @@ class CensusTract(GeographicArea):
         return 'Census Tract'
 
 
+class TribalCensusTract(CensusTract):
+    """Tribal Census Tract"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Tribal Census Tract'
+
+
+class Estate(GeographicArea):
+    """Estate"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Estate'
+
+
+class Subbarrio(GeographicArea):
+    """Subbarrio"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Subbarrio'
+
+
+class ConsolidatedCity(GeographicArea):
+    """Consolidated City"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Consolidated City'
+
+
+class IncorporatedPlace(GeographicArea):
+    """Incorporated Place"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Incorporated Place'
+
+
+class ANRC(GeographicArea):
+    """Alaska Native Regional Corporation"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Alaska Native Regional Corporation'
+
+
+class FederalAmericanIndianReservation(GeographicArea):
+    """Federal American Indian Reservation"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Federal American Indian Reservation'
+
+
+class OffReservationTrustLand(GeographicArea):
+    """Off-Reservation Trust Land"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Off-Reservation Trust Land'
+
+
+class StateAmericanIndianReservation(GeographicArea):
+    """State American Indian Reservation"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'State American Indian Reservation'
+
+
+class HawaiianHomeLand(GeographicArea):
+    """Hawaiian Home Land"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Hawaiian Home Land'
+
+
+class ANVSA(GeographicArea):
+    """Alaska Native Village Statistical Area"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Alaska Native Village Statistical Area'
+
+
+class OTSA(GeographicArea):
+    """Oklahoma Tribal Statistical Area"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Oklahoma Tribal Statistical Area'
+
+
+class SDTSA(GeographicArea):
+    """State Designated Tribal Statistical Areas"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'State Designated Tribal Statistical Area'
+
+
+class TDSA(GeographicArea):
+    """Tribal Designated Statistical Area"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Tribal Designated Statistical Area'
+
+
+class AIJUA(GeographicArea):
+    """American Indian Joint-Use Area"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'American Indian Joint-Use Area'
+
+
+class CombinedNECTA(GeographicArea):
+    """Combined New England City and Town Area"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Combined New England City and Town Area'
+
+
+class NECTADivision(GeographicArea):
+    """New England City and Town Area Division"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'New England City and Town Area Division'
+
+
+class MetropolitanNECTA(CombinedNECTA):
+    """Metropolitan New England City and Town Area"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Metropolitan New England City and Town Area'
+
+
+class MicropolitanNECTA(CombinedNECTA):
+    """Micropolitan New England City and Town Area"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Micropolitan New England City and Town Area'
+
+
+class UrbanGrowthArea(GeographicArea):
+    """Urban Growth Area"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Urban Growth Area'
+
+
+class UrbanizedArea(GeographicArea):
+    """Urbanized Area"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Urbanized Area'
+
+
+class UrbanCluster(GeographicArea):
+    """Urban Cluster"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Urban Cluster'
+
+
+class UrbanizedArea_2010(UrbanizedArea):
+    """2010 Census Urbanized Area"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '2010 Census Urbanized Area'
+
+
+class UrbanCluster_2010(UrbanCluster):
+    """2010 Census Urban Cluster"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return '2010 Census Urban Cluster'
+
+
+class TrafficAnalysisDistrict(GeographicArea):
+    """Traffic Analysis District"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Traffic Analysis District'
+
+
+class TrafficAnalysisZone(GeographicArea):
+    """Traffic Analysis Zone"""
+
+    @property
+    def geography_type(self):
+        """Returns the Geography Type for the given geography."""
+        return 'Traffic Analysis Zone'
+
+
+# Key represents the ``geography_type`` returned by the Census Geocoder API.
+# Tuple contains the GeographyCollection property name and the GeographicArea sub-class.
 GEOGRAPHY_MAP = {
+    '2010 Census Public Use Microdata Areas': ('pumas_2010', PUMA_2010),
+    'Public Use Microdata Areas': ('pumas', PUMA),
     'Census Regions': ('regions', CensusRegion),
     'Census Divisions': ('divisions', CensusDivision),
     'States': ('states', State),
     'Counties': ('counties', County),
     'County Subdivisions': ('county_subdivisions', CountySubDivision),
+    'Tribal Subdivisions': ('tribal_subdivisions', TribalSubDivision),
     'Metropolitan Divisions': ('metropolitan_divisions', MetropolitanDivision),
+    '2010 Census ZIP Code Tabulation Areas': ('zcta_2010', ZCTA_2010),
+    '2020 ZIP code Tabulation Areas': ('zcta_2020', ZCTA_2020),
+    'ZIP Code Tabulation Areas': ('zcta5', ZCTA5),
     'Zip Code Tabulation Areas': ('zcta5', ZCTA5),
     'Unified School Districts': ('unified_school_districts', UnifiedSchoolDistrict),
+    'Secondary School Districts': ('secondary_school_districts', SecondarySchoolDistrict),
+    'Elementary School Districts': ('elementary_school_districts',
+                                    ElementarySchoolDistrict),
     'Voting Districts': ('voting_districts', VotingDistrict),
     'State Legislative Districts - Upper': ('state_legislative_districts_upper',
                                             StateLegislativeDistrictUpper),
     'State Legislative Districts - Lower': ('state_legislative_districts_lower',
                                             StateLegislativeDistrictLower),
-    '116th Congressional Districts': ('congressional_districts', CongressionalDistrict),
+    '2018 State Legislative Districts - Upper': ('state_legislative_districts_upper_2018',
+                                                 StateLegislativeDistrictUpper_2018),
+    '2018 State Legislative Districts - Lower': ('state_legislative_districts_lower_2018',
+                                                 StateLegislativeDistrictLower_2018),
+    '2016 State Legislative Districts - Upper': ('state_legislative_districts_upper_2016',
+                                                 StateLegislativeDistrictUpper_2016),
+    '2016 State Legislative Districts - Lower': ('state_legislative_districts_lower_2016',
+                                                 StateLegislativeDistrictLower_2016),
+    '2012 State Legislative Districts - Upper': ('state_legislative_districts_upper_2012',
+                                                 StateLegislativeDistrictUpper_2012),
+    '2012 State Legislative Districts - Lower': ('state_legislative_districts_lower_2012',
+                                                 StateLegislativeDistrictLower_2012),
+    '2010 State Legislative Districts - Upper': ('state_legislative_districts_upper_2010',
+                                                 StateLegislativeDistrictUpper_2010),
+    '2010 State Legislative Districts - Lower': ('state_legislative_districts_lower_2010',
+                                                 StateLegislativeDistrictLower_2010),
+    '116th Congressional Districts': ('congressional_districts_116',
+                                      CongressionalDistrict_116),
+    '115th Congressional Districts': ('congressional_districts_115',
+                                      CongressionalDistrict_115),
+    '113th Congressional Districts': ('congressional_districts_113',
+                                      CongressionalDistrict_113),
+    '111th Congressional Districts': ('congressional_districts_111',
+                                      CongressionalDistrict_111),
     'Combind Statistical Areas': ('csa', CombinedStatisticalArea),
     'Metropolitan Statistical Areas': ('msa', MetropolitanStatisticalArea),
-    'Census Block Groups': ('census_block_groups', CensusBlockGroup),
+    'Micropolitan Statistical Areas': ('micropolitan_stastistical_areas',
+                                       MicropolitanStatisticalArea),
+    'Census Block Groups': ('block_groups', CensusBlockGroup),
+    'Tribal Census Block Groups': ('tribal_block_groups', TribalCensusBlockGroup),
     'Census Blocks': ('blocks', CensusBlock),
+    '2020 Census Blocks': ('blocks_2020', CensusBlock_2020),
+    'Tribal Census Tracts': ('tribal_tracts', TribalCensusTract),
     'Census Tracts': ('tracts', CensusTract),
-    'Census Designated Places': ('cdp', CensusDesignatedPlace)
+    'Census Designated Places': ('metrpolitan_nectas', CensusDesignatedPlace),
+    'Estates': ('estates', Estate),
+    'Subbarrios': ('subbarrios', Subbarrio),
+    'Consolidated Cities': ('consolidated_cities', ConsolidatedCity),
+    'Incorporated Places': ('incorporated_places', IncorporatedPlace),
+    'Alaska Native Regional Corporations': ('anrc', ANRC),
+    'Federal American Indian Reservations': ('federal_american_indian_reservations',
+                                             FederalAmericanIndianReservation),
+    'Off-Reservation Trust Lands': ('off_reservation_trust_lands',
+                                    OffReservationTrustLand),
+    'State American Indian Reservations': ('state_american_indian_reservations',
+                                           StateAmericanIndianReservation),
+    'Hawaiian Home Lands': ('hawaiian_home_lands', HawaiianHomeLand),
+    'Alaska Native Village Statistical Areas': ('anvsa', ANVSA),
+    'Oklahoma Tribal Statistical Areas': ('otsa', OTSA),
+    'State Designated Tribal Statistical Areas': ('sdtsa', SDTSA),
+    'Tribal Designated Statistical Areas': ('tdsa', TDSA),
+    'American Indian Joint-Use Areas': ('american_indian_joint_use_area', AIJUA),
+    'Combined New England City and Town Areas': ('combined_nectas', CombinedNECTA),
+    'New England City and Town Area Divisions': ('necta_divisions', NECTADivision),
+    'Metropolitan New England City and Town Areas': ('metropolitan_nectas',
+                                                     MetropolitanNECTA),
+    'Micopolitan New England City and Town Areas': ('micropolitan_nectas',
+                                                    MicropolitanNECTA),
+    'Urban Growth Areas': ('urban_growth_areas', UrbanGrowthArea),
+    'Urbanized Areas': ('urbanized_areas', UrbanizedArea),
+    '2010 Census Urbanized Areas': ('urbanized_areas_2010', UrbanizedArea_2010),
+    'Urban Clusters': ('urban_clusters', UrbanCluster),
+    '2010 Census Urban Clusters': ('urban_clusters_2010', UrbanCluster_2010),
+    'Traffic Analysis Districts': ('traffic_analysis_districts', TrafficAnalysisDistrict),
+    'Traffic Analysis Zones': ('traffic_analysis_zones', TrafficAnalysisZone),
 }
 
 
-def create_layer_property(layer):
-    """Converts the layer string returned to a Python-friendly property name.
+def get_target_layer_cls(property_name):
+    """Return the :class:`GeographicArea` sub-class that corresponds to ``proprety_name``.
 
-    :param layer: The layer name.
-    :type layer: :class:`str <python:str>`
+    :param property_name: The :class:`GeographyCollection` property name whose
+      correpsonding :class:`GeographicArea` sub-class should be returned.
+    :type property_name: :class:`str <python:str>`
 
-    :returns: A Python-friendly property name.
-    :rtype: :class:`str <python:str>`
+    :returns: A sub-class of :class:`GeographicArea`
+    :rtype: class object of :class:`GeographicArea`
 
-    :raises CensusGeocoderError: if unable to convert the layer string.
     """
-    layer = validators.string(layer, allow_empty = False)
-    layer = layer.lower()
-    if checkers.is_variable_name(layer):
-        return layer
+    for key in GEOGRAPHY_MAP:
+        tuple_object = GEOGRAPHY_MAP.get('key')
+        if tuple_object[0] == property_name:
+            return tuple_object[1]
 
-    components = layer.split(' ')
-    cleaned_components = []
-    for component in components:
-        if component == '-':
-            continue
-        cleaned = component.replace('-', '')
-        cleaned_components.append(cleaned)
+    raise errors.CensusGeocoderError(f'Property name "{property_name}" not recognized.')
 
-    if cleaned_components[0].startswith('2') or cleaned_components[1].startswith('1'):
-        sorted_components = [x for x in cleaned_components[1:]]
-        sorted_components.append(cleaned_components[0])
-    else:
-        sorted_components = [x for x in cleaned_components]
 
-    return_value = '_'.join(sorted_components)
+def validate_layer_values(value, property_name):
+    """Ensure that ``value`` is an iterable of :class:`GeographicArea`.
 
-    return return_value
+    :param value: The value to validate.
+    :type value: iterable of :class:`GeographicArea` or :class:`dict <python:dict>`
+
+    :param property_name: The name of the property that is being populated.
+    :type property_name: :class:`str <python:str>`
+
+    :returns: Collection of :class:`GeographicArea` instances
+    :rtype: iterable of :class:`GeographicArea`
+    """
+    value = validators.iterable(value, allow_empty = False)
+    target_cls = get_target_layer_cls(property_name)
+    validated_values = []
+    for item in value:
+        if not isinstance(item, target_cls):
+            item = validators.dict(value, allow_empty = False)
+            validated_value = target_cls.from_dict(item)
+            validated_values.append(validated_value)
+        else:
+            validated_values.append(item)
+
+    return validated_values
+
+
+LAYER_PROPERTIES = [GEOGRAPHY_MAP.get(x)[0] for x in GEOGRAPHY_MAP]
 
 
 class GeographyCollection(metaclasses.BaseEntity):
     """Collection of :class:`GeographicArea` objects."""
 
     def __init__(self, **kwargs):
+        self._pumas_2010 = []
+        self._pumas = []
         self._regions = []
         self._divisions = []
         self._states = []
         self._counties = []
         self._county_subdivisions = []
+        self._tribal_subdivisions = []
         self._metropolitan_divisions = []
         self._zcta5 = []
+        self._zcta_2010 = []
         self._unified_school_districts = []
+        self._secondary_school_districts = []
+        self._elementary_school_districts = []
         self._voting_districts = []
         self._state_legislative_districts_upper = []
         self._state_legislative_districts_lower = []
-        self._congressional_districts = []
+        self._state_legislative_districts_upper_2018 = []
+        self._state_legislative_districts_lower_2018 = []
+        self._state_legislative_districts_upper_2016 = []
+        self._state_legislative_districts_lower_2016 = []
+        self._state_legislative_districts_upper_2012 = []
+        self._state_legislative_districts_lower_2012 = []
+        self._state_legislative_districts_upper_2010 = []
+        self._state_legislative_districts_lower_2010 = []
+        self._congressional_districts_116 = []
+        self._congressional_districts_115 = []
+        self._congressional_districts_113 = []
+        self._congressional_districts_111 = []
         self._csa = []
         self._msa = []
-        self._census_block_groups = []
+        self._block_groups = []
         self._blocks = []
+        self._blocks_2020 = []
         self._tracts = []
-        self._cdp = []
+        self._tribal_tracts = []
+        self._metrpolitan_nectas = []
+        self._estates = []
+        self._subbarrios = []
+        self._consolidated_cities = []
+        self._incorporated_places = []
+        self._anrc = []
+        self._federal_american_indian_reservations = []
+        self._off_reservation_trust_lands = []
+        self._state_american_indian_reservations = []
+        self._hawaiian_home_lands = []
+        self._anvsa = []
+        self._otsa = []
+        self._sdtsa = []
+        self._tdsa = []
+        self._american_indian_joint_use_area = []
+        self._combined_nectas = []
+        self._necta_divisions = []
+        self._metropolitan_nectas = []
+        self._micropolitan_nectas = []
+        self._urban_growth_areas = []
+        self._urbanized_areas = []
+        self._urbanized_areas_2010 = []
+        self._urban_clusters = []
+        self._urban_clusters_2010 = []
+        self._traffic_analysis_districts = []
+        self._traffic_analsysis_zones = []
 
         self = self.from_dict(kwargs)
 
@@ -1348,6 +1908,51 @@ class GeographyCollection(metaclasses.BaseEntity):
 
         return result
 
+    def _set_hidden_property(self, value, property_name):
+        """Validates ``value`` and sets the correpsonding hidden property for the
+        indicated layer.
+
+        :param values: The values to validate / set.
+        :type values: iterable
+
+        :param property_name: The original property name is being set.
+        :type property_name: :class:`str <python:str>`
+
+        """
+        values = validate_layer_values(value, property_name)
+        attr_target = f'_{property_name}'
+
+        if not values:
+            setattr(self, attr_target, [])
+        else:
+            setattr(self, attr_target, [x for x in values])
+
+    @property
+    def pumas_2010(self):
+        """2010 Census Public Use Microdata Areas
+
+        :rtype: :class:`list <python:list>` of :class:`PUMA_2010`
+        """
+        return self._pumas_2010
+
+    @pumas_2010.setter
+    def pumas_2010(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def pumas(self):
+        """Public Use Microdata Areas
+
+        :rtype: :class:`list <python:list>` of :class:`PUMA`
+        """
+        return self._pumas
+
+    @pumas.setter
+    def pumas(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
     @property
     def regions(self):
         """Census Regions
@@ -1358,11 +1963,8 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @regions.setter
     def regions(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._regions = []
-        else:
-            self._regions = [x for x in value]
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
     def divisions(self):
@@ -1374,11 +1976,8 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @divisions.setter
     def divisions(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._divisions = []
-        else:
-            self._divisions = [x for x in value]
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
     def states(self):
@@ -1390,11 +1989,8 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @states.setter
     def states(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._states = []
-        else:
-            self._states = [x for x in value]
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
     def counties(self):
@@ -1406,11 +2002,8 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @counties.setter
     def counties(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._counties = []
-        else:
-            self._counties = [x for x in value]
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
     def county_subdivisions(self):
@@ -1422,11 +2015,21 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @county_subdivisions.setter
     def county_subdivisions(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._county_subdivisions = []
-        else:
-            self._county_subdivisions = [x for x in value]
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def tribal_subdivisions(self):
+        """Tribal Sub-divisions
+
+        :rtype: :class:`list <python:list>` of :class:`TribalSubDivision`
+        """
+        return self._tribal_subdivisions
+
+    @tribal_subdivisions.setter
+    def tribal_subdivisions(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
     def metropolitan_divisions(self):
@@ -1438,11 +2041,34 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @metropolitan_divisions.setter
     def metropolitan_divisions(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._metropolitan_divisions = []
-        else:
-            self._metropolitan_divisions = [x for x in value]
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def zcta_2010(self):
+        """2010 Census ZIP Code Tabulation Areas
+
+        :rtype: :class:`list <python:list>` of :class:`ZCTA_2010`
+        """
+        return self._zcta_2010
+
+    @zcta_2010.setter
+    def zcta_2010(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def zcta_2020(self):
+        """2020 Census ZIP Code Tabulation Areas
+
+        :rtype: :class:`list <python:list>` of :class:`ZCTA_2020`
+        """
+        return self._zcta_2020
+
+    @zcta_2020.setter
+    def zcta_2020(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
     def zcta5(self):
@@ -1454,11 +2080,8 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @zcta5.setter
     def zcta5(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._zcta5 = []
-        else:
-            self._zcta5 = [x for x in value]
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
     def unified_school_districts(self):
@@ -1470,11 +2093,34 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @unified_school_districts.setter
     def unified_school_districts(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._unified_school_districts = []
-        else:
-            self._unified_school_districts = [x for x in value]
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def secondary_school_districts(self):
+        """Secondary School Districts
+
+        :rtype: :class:`list <python:list>` of :class:`SecondarySchoolDistrict`
+        """
+        return self._secondary_school_districts
+
+    @secondary_school_districts.setter
+    def secondary_school_districts(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def elementary_school_districts(self):
+        """Elementary School Districts
+
+        :rtype: :class:`list <python:list>` of :class:`ElementarySchoolDistrict`
+        """
+        return self._elementary_school_districts
+
+    @elementary_school_districts.setter
+    def elementary_school_districts(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
     def voting_districts(self):
@@ -1486,11 +2132,8 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @voting_districts.setter
     def voting_districts(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._voting_districts = []
-        else:
-            self._voting_districts = [x for x in value]
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
     def state_legislative_districts_upper(self):
@@ -1502,11 +2145,8 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @state_legislative_districts_upper.setter
     def state_legislative_districts_upper(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._state_legislative_districts_upper = []
-        else:
-            self._state_legislative_districts_upper = [x for x in value]
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
     def state_legislative_districts_lower(self):
@@ -1518,27 +2158,164 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @state_legislative_districts_lower.setter
     def state_legislative_districts_lower(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._state_legislative_districts_lower = []
-        else:
-            self._state_legislative_districts_lower = [x for x in value]
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
-    def congressional_districts(self):
-        """Congressional Districts
+    def state_legislative_districts_upper_2018(self):
+        """2018 State Legislative Districts - Upper
 
-        :rtype: :class:`list <python:list>` of :class:`CensusDivision`
+        :rtype: :class:`list <python:list>` of :class:`StateLegislativeDistrictUpper_2018`
         """
-        return self._congressional_districts
+        return self._state_legislative_districts_upper_2018
 
-    @congressional_districts.setter
-    def congressional_districts(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._congressional_districts = []
-        else:
-            self._congressional_districts = [x for x in value]
+    @state_legislative_districts_upper_2018.setter
+    def state_legislative_districts_upper(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def state_legislative_districts_lower_2018(self):
+        """2018 State Legislative Districts - Lower
+
+        :rtype: :class:`list <python:list>` of :class:`StateLegislativeDistrictLower_2018`
+        """
+        return self._state_legislative_districts_lower_2018
+
+    @state_legislative_districts_lower_2018.setter
+    def state_legislative_districts_lower_2018(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def state_legislative_districts_upper_2016(self):
+        """2016 State Legislative Districts - Upper
+
+        :rtype: :class:`list <python:list>` of :class:`StateLegislativeDistrictUpper_2016`
+        """
+        return self._state_legislative_districts_upper_2016
+
+    @state_legislative_districts_upper_2016.setter
+    def state_legislative_districts_upper(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def state_legislative_districts_lower_2016(self):
+        """2016 State Legislative Districts - Lower
+
+        :rtype: :class:`list <python:list>` of :class:`StateLegislativeDistrictLower_2016`
+        """
+        return self._state_legislative_districts_lower_2016
+
+    @state_legislative_districts_lower_2016.setter
+    def state_legislative_districts_lower_2016(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def state_legislative_districts_upper_2012(self):
+        """2012 State Legislative Districts - Upper
+
+        :rtype: :class:`list <python:list>` of :class:`StateLegislativeDistrictUpper_2012`
+        """
+        return self._state_legislative_districts_upper_2012
+
+    @state_legislative_districts_upper_2012.setter
+    def state_legislative_districts_upper(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def state_legislative_districts_lower_2012(self):
+        """2012 State Legislative Districts - Lower
+
+        :rtype: :class:`list <python:list>` of :class:`StateLegislativeDistrictLower_2012`
+        """
+        return self._state_legislative_districts_lower_2012
+
+    @state_legislative_districts_lower_2012.setter
+    def state_legislative_districts_lower_2012(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def state_legislative_districts_upper_2010(self):
+        """2010 State Legislative Districts - Upper
+
+        :rtype: :class:`list <python:list>` of :class:`StateLegislativeDistrictUpper_2010`
+        """
+        return self._state_legislative_districts_upper_2010
+
+    @state_legislative_districts_upper_2010.setter
+    def state_legislative_districts_upper(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def state_legislative_districts_lower_2010(self):
+        """2010 State Legislative Districts - Lower
+
+        :rtype: :class:`list <python:list>` of :class:`StateLegislativeDistrictLower_2010`
+        """
+        return self._state_legislative_districts_lower_2010
+
+    @state_legislative_districts_lower_2010.setter
+    def state_legislative_districts_lower_2010(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def congressional_districts_116(self):
+        """116th Congressional Districts
+
+        :rtype: :class:`list <python:list>` of :class:`CongressionalDistrict_116`
+        """
+        return self._congressional_districts_116
+
+    @congressional_districts_116.setter
+    def congressional_districts_116(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def congressional_districts_115(self):
+        """115th Congressional Districts
+
+        :rtype: :class:`list <python:list>` of :class:`CongressionalDistrict_115`
+        """
+        return self._congressional_districts_115
+
+    @congressional_districts_115.setter
+    def congressional_districts_115(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def congressional_districts_113(self):
+        """113th Congressional Districts
+
+        :rtype: :class:`list <python:list>` of :class:`CongressionalDistrict_113`
+        """
+        return self._congressional_districts_113
+
+    @congressional_districts_113.setter
+    def congressional_districts_113(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def congressional_districts_111(self):
+        """111th Congressional Districts
+
+        :rtype: :class:`list <python:list>` of :class:`CongressionalDistrict_111`
+        """
+        return self._congressional_districts_111
+
+    @congressional_districts_111.setter
+    def congressional_districts_111(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
     def csa(self):
@@ -1550,11 +2327,8 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @csa.setter
     def csa(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._csa = []
-        else:
-            self._csa = [x for x in value]
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
     def msa(self):
@@ -1566,27 +2340,34 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @msa.setter
     def msa(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._msa = []
-        else:
-            self._msa = [x for x in value]
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
-    def census_block_groups(self):
+    def block_groups(self):
         """Census Block Groups
 
         :rtype: :class:`list <python:list>` of :class:`CensusBlockGroup`
         """
-        return self._census_block_groups
+        return self._block_groups
 
-    @census_block_groups.setter
-    def census_block_groups(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._census_block_groups = []
-        else:
-            self._census_block_groups = [x for x in value]
+    @block_groups.setter
+    def block_groups(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def tribal_block_groups(self):
+        """Tribal Census Block Groups
+
+        :rtype: :class:`list <python:list>` of :class:`TribalCensusBlockGroup`
+        """
+        return self._tribal_block_groups
+
+    @tribal_block_groups.setter
+    def tribal_block_groups(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
     def blocks(self):
@@ -1598,11 +2379,21 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @blocks.setter
     def blocks(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._blocks = []
-        else:
-            self._blocks = [x for x in value]
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def blocks_2020(self):
+        """2020 Census Blocks
+
+        :rtype: :class:`list <python:list>` of :class:`CensusBlock_2020`
+        """
+        return self._blocks
+
+    @blocks_2020.setter
+    def blocks_2020(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
     def tracts(self):
@@ -1614,27 +2405,359 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @tracts.setter
     def tracts(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._tracts = []
-        else:
-            self._tracts = [x for x in value]
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
-    def cdp(self):
+    def tribal_tracts(self):
+        """Tribal Census Tracts
+
+        :rtype: :class:`list <python:list>` of :class:`TribalCensusTract`
+        """
+        return self._tribal_tracts
+
+    @tribal_tracts.setter
+    def tribal_tracts(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def metrpolitan_nectas(self):
         """Census Designated Places
 
         :rtype: :class:`list <python:list>` of :class:`CensusDesignatedPlace`
         """
-        return self._cdp
+        return self._metrpolitan_nectas
 
-    @cdp.setter
-    def cdp(self, value):
-        value = validators.iterable(value, allow_empty = True)
-        if not value:
-            self._cdp = []
-        else:
-            self._cdp = [x for x in value]
+    @metrpolitan_nectas.setter
+    def metrpolitan_nectas(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def estates(self):
+        """Estates
+
+        :rtype: :class:`list <python:list>` of :class:`Estate`
+        """
+        return self._estates
+
+    @estates.setter
+    def estates(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def subbarrios(self):
+        """Sub-barrios
+
+        :rtype: :class:`list <python:list>` of :class:`Subbarrio`
+        """
+        return self._subbarrios
+
+    @subbarrios.setter
+    def subbarrios(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def consolidated_cities(self):
+        """Consolidated Cities
+
+        :rtype: :class:`list <python:list>` of :class:`ConsolidatedCity`
+        """
+        return self._consolidated_cities
+
+    @consolidated_cities.setter
+    def consolidated_cities(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def incorporated_places(self):
+        """Incorporated Places
+
+        :rtype: :class:`list <python:list>` of :class:`IncorporatedPlace`
+        """
+        return self._incorporated_places
+
+    @incorporated_places.setter
+    def incorporated_places(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def anrc(self):
+        """Alaska Native Regional Corporations
+
+        :rtype: :class:`list <python:list>` of :class:`ANRC`
+        """
+        return self._anrc
+
+    @anrc.setter
+    def anrc(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def federal_american_indian_reservations(self):
+        """Federal American Indian Reservations
+
+        :rtype: :class:`list <python:list>` of :class:`FederalAmericanIndianReservation`
+        """
+        return self._federal_american_indian_reservations
+
+    @federal_american_indian_reservations.setter
+    def federal_american_indian_reservations(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def off_reservation_trust_lands(self):
+        """Off-Reservation Trust Lands
+
+        :rtype: :class:`list <python:list>` of :class:`OffReservationTrustLand`
+        """
+        return self._off_reservation_trust_lands
+
+    @off_reservation_trust_lands.setter
+    def off_reservation_trust_lands(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def state_american_indian_reservation(self):
+        """State American Indian Reservation
+
+        :rtype: :class:`list <python:list>` of :class:`StateAmericanIndianReservation`
+        """
+        return self._state_american_indian_reservation
+
+    @state_american_indian_reservation.setter
+    def state_american_indian_reservation(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def hawaiian_home_lands(self):
+        """Hawaiian Home Lands
+
+        :rtype: :class:`list <python:list>` of :class:`HawaiianHomeLand`
+        """
+        return self._hawaiian_home_lands
+
+    @hawaiian_home_lands.setter
+    def hawaiian_home_lands(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def anvsa(self):
+        """Alaska Native Village Statistical Area
+
+        :rtype: :class:`list <python:list>` of :class:`ANVSA`
+        """
+        return self._anvsa
+
+    @anvsa.setter
+    def anvsa(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def otsa(self):
+        """Oklahoma Tribal Statistical Areas
+
+        :rtype: :class:`list <python:list>` of :class:`OTSA`
+        """
+        return self._otsa
+
+    @otsa.setter
+    def otsa(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def sdtsa(self):
+        """State Designated Tribal Statistical Areas
+
+        :rtype: :class:`list <python:list>` of :class:`SDTSA`
+        """
+        return self._sdtsa
+
+    @sdtsa.setter
+    def sdtsa(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def tdsa(self):
+        """Tribal Designated Statistical Areas
+
+        :rtype: :class:`list <python:list>` of :class:`TDSA`
+        """
+        return self._tdsa
+
+    @tdsa.setter
+    def tdsa(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def american_indian_joint_use_areas(self):
+        """American Indian Joint-Use Areas
+
+        :rtype: :class:`list <python:list>` of :class:`AIJUA`
+        """
+        return self._american_indian_joint_use_areas
+
+    @american_indian_joint_use_areas.setter
+    def american_indian_joint_use_areas(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def combined_nectas(self):
+        """Combined New England City and Town Areas
+
+        :rtype: :class:`list <python:list>` of :class:`CombinedNECTA`
+        """
+        return self._combined_nectas
+
+    @combined_nectas.setter
+    def combined_nectas(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def necta_divisions(self):
+        """New England City and Town Area Divisions
+
+        :rtype: :class:`list <python:list>` of :class:`NECTADivision`
+        """
+        return self._necta_divisions
+
+    @necta_divisions.setter
+    def necta_divisions(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def metrpolitan_nectas(self):
+        """Metropolitan New England City and Town Areas
+
+        :rtype: :class:`list <python:list>` of :class:`MetropolitanNECTA`
+        """
+        return self._metrpolitan_nectas
+
+    @metrpolitan_nectas.setter
+    def metrpolitan_nectas(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def micropolitan_nectas(self):
+        """Micropolitan New England City and Town Areas
+
+        :rtype: :class:`list <python:list>` of :class:`MicropolitanNECTA`
+        """
+        return self._micropolitan_nectas
+
+    @micropolitan_nectas.setter
+    def micropolitan_nectas(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def urban_growth_areas(self):
+        """Urban Growth Areas
+
+        :rtype: :class:`list <python:list>` of :class:`UrbanGrowthArea`
+        """
+        return self._urban_growth_areas
+
+    @urban_growth_areas.setter
+    def urban_growth_areas(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def urbanized_areas(self):
+        """Urbanized Areas
+
+        :rtype: :class:`list <python:list>` of :class:`UrbanizedArea`
+        """
+        return self._urbanized_areas
+
+    @urbanized_areas.setter
+    def urbanized_areas(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def urbanized_areas_2010(self):
+        """2010 Census Urbanized Areas
+
+        :rtype: :class:`list <python:list>` of :class:`UrbanizedArea_2010`
+        """
+        return self._urbanized_areas_2010
+
+    @urbanized_areas_2010.setter
+    def urbanized_areas_2010(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def urban_clusters(self):
+        """Urban Clusters
+
+        :rtype: :class:`list <python:list>` of :class:`UrbanCluster`
+        """
+        return self._urban_clusters
+
+    @urban_clusters.setter
+    def urban_clusters(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def urban_clusters_2010(self):
+        """2010 Census Urban Clusters
+
+        :rtype: :class:`list <python:list>` of :class:`urban_clusters_2010`
+        """
+        return self._urban_clusters_2010
+
+    @urban_clusters_2010.setter
+    def urban_clusters_2010(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def traffic_analysis_districts(self):
+        """Traffic Analysis Districts
+
+        :rtype: :class:`list <python:list>` of :class:`TrafficAnalysisDistrict`
+        """
+        return self._traffic_analysis_districts
+
+    @traffic_analysis_districts.setter
+    def traffic_analysis_districts(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
+
+    @property
+    def traffic_analysis_zones(self):
+        """Traffic Analysis Zones
+
+        :rtype: :class:`list <python:list>` of :class:`TrafficAnalysisZone`
+        """
+        return self._traffic_analysis_zones
+
+    @traffic_analysis_zones.setter
+    def traffic_analysis_zones(self, value):
+        property_name = currentframe().f_back.f_code.co_name
+        self._set_hidden_property_name(value, property_name)
 
     @property
     def entity_type(self):
