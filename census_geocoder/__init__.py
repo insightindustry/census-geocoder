@@ -18,7 +18,7 @@ with open(os.path.join(os.path.dirname(__file__), '__version__.py')) as version_
 __version__ = version_dict.get('__version__')
 
 location = locations.Location
-geography = geographies.Geography
+geography = geographies.GeographicArea
 matched_address = locations.MatchedAddress
 
 __all__ = [

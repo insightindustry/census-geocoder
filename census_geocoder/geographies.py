@@ -12,7 +12,7 @@ from census_geocoder import metaclasses
 from census_geocoder.constants import FUNCSTAT, LSAD
 
 
-class Geography(metaclasses.GeographicEntity):
+class GeographicArea(metaclasses.GeographicEntity):
     """Base class for a given :term:`geography` as supported by the US government."""
 
     def __init__(self, **kwargs):
@@ -1091,7 +1091,7 @@ class Geography(metaclasses.GeographicEntity):
         return result
 
 
-class StateLegislativeDistrictLower(Geography):
+class StateLegislativeDistrictLower(GeographicArea):
     """State Legislative District - Lower"""
 
     @property
@@ -1100,7 +1100,7 @@ class StateLegislativeDistrictLower(Geography):
         return 'State Legislative District - Lower'
 
 
-class StateLegislativeDistrictUpper(Geography):
+class StateLegislativeDistrictUpper(GeographicArea):
     """State Legislative District - Upper"""
 
     @property
@@ -1109,7 +1109,7 @@ class StateLegislativeDistrictUpper(Geography):
         return 'State Legislative District - Upper'
 
 
-class County(Geography):
+class County(GeographicArea):
     """County"""
 
     @property
@@ -1118,7 +1118,7 @@ class County(Geography):
         return 'County'
 
 
-class ZCTA5(Geography):
+class ZCTA5(GeographicArea):
     """ZCTA5"""
 
     @property
@@ -1127,7 +1127,7 @@ class ZCTA5(Geography):
         return 'Zip Code Tabulation Area'
 
 
-class UnifiedSchoolDistrict(Geography):
+class UnifiedSchoolDistrict(GeographicArea):
     """Unified School District"""
 
     @property
@@ -1136,7 +1136,7 @@ class UnifiedSchoolDistrict(Geography):
         return 'Unified School District'
 
 
-class VotingDistrict(Geography):
+class VotingDistrict(GeographicArea):
     """Voting District"""
 
     @property
@@ -1145,7 +1145,7 @@ class VotingDistrict(Geography):
         return 'County'
 
 
-class MetropolitanDivision(Geography):
+class MetropolitanDivision(GeographicArea):
     """Metropolitan Division"""
 
     @property
@@ -1154,7 +1154,7 @@ class MetropolitanDivision(Geography):
         return 'Metropolitan Division'
 
 
-class State(Geography):
+class State(GeographicArea):
     """State"""
 
     @property
@@ -1163,7 +1163,7 @@ class State(Geography):
         return 'State'
 
 
-class CensusBlockGroup(Geography):
+class CensusBlockGroup(GeographicArea):
     """Census Block Group"""
 
     @property
@@ -1172,7 +1172,7 @@ class CensusBlockGroup(Geography):
         return 'Census Block Group'
 
 
-class CombinedStatisticalArea(Geography):
+class CombinedStatisticalArea(GeographicArea):
     """Combined Statistical Area"""
 
     @property
@@ -1181,7 +1181,7 @@ class CombinedStatisticalArea(Geography):
         return 'Combined Statistical Area'
 
 
-class CountySubDivision(Geography):
+class CountySubDivision(GeographicArea):
     """County Sub-division"""
 
     @property
@@ -1190,7 +1190,7 @@ class CountySubDivision(Geography):
         return 'County Sub-division'
 
 
-class CensusDesignatedPlace(Geography):
+class CensusDesignatedPlace(GeographicArea):
     """Census Designated Place"""
 
     @property
@@ -1199,7 +1199,7 @@ class CensusDesignatedPlace(Geography):
         return 'Census Designated Place'
 
 
-class CensusDivision(Geography):
+class CensusDivision(GeographicArea):
     """Census Division"""
 
     @property
@@ -1208,7 +1208,7 @@ class CensusDivision(Geography):
         return 'Division'
 
 
-class CongressionalDistrict(Geography):
+class CongressionalDistrict(GeographicArea):
     """Congressional District"""
 
     @property
@@ -1217,7 +1217,7 @@ class CongressionalDistrict(Geography):
         return 'Congressional District'
 
 
-class CensusRegion(Geography):
+class CensusRegion(GeographicArea):
     """Census Region"""
 
     @property
@@ -1226,7 +1226,7 @@ class CensusRegion(Geography):
         return 'Region'
 
 
-class MetropolitanStatisticalArea(Geography):
+class MetropolitanStatisticalArea(GeographicArea):
     """Metropolitan Statistical Area"""
 
     @property
@@ -1235,7 +1235,7 @@ class MetropolitanStatisticalArea(Geography):
         return 'Metropolitan Statistical Area'
 
 
-class CensusBlock(Geography):
+class CensusBlock(GeographicArea):
     """Census Block"""
 
     @property
@@ -1244,7 +1244,7 @@ class CensusBlock(Geography):
         return 'Census Block'
 
 
-class CensusTract(Geography):
+class CensusTract(GeographicArea):
     """Census Tract"""
 
     @property
@@ -1277,8 +1277,43 @@ GEOGRAPHY_MAP = {
 }
 
 
+def create_layer_property(layer):
+    """Converts the layer string returned to a Python-friendly property name.
+
+    :param layer: The layer name.
+    :type layer: :class:`str <python:str>`
+
+    :returns: A Python-friendly property name.
+    :rtype: :class:`str <python:str>`
+
+    :raises CensusGeocoderError: if unable to convert the layer string.
+    """
+    layer = validators.string(layer, allow_empty = False)
+    layer = layer.lower()
+    if checkers.is_variable_name(layer):
+        return layer
+
+    components = layer.split(' ')
+    cleaned_components = []
+    for component in components:
+        if component == '-':
+            continue
+        cleaned = component.replace('-', '')
+        cleaned_components.append(cleaned)
+
+    if cleaned_components[0].startswith('2') or cleaned_components[1].startswith('1'):
+        sorted_components = [x for x in cleaned_components[1:]]
+        sorted_components.append(cleaned_components[0])
+    else:
+        sorted_components = [x for x in cleaned_components]
+
+    return_value = '_'.join(sorted_components)
+
+    return return_value
+
+
 class GeographyCollection(metaclasses.BaseEntity):
-    """Collection of :class:`Geography` objects."""
+    """Collection of :class:`GeographicArea` objects."""
 
     def __init__(self, **kwargs):
         self._regions = []
