@@ -98,7 +98,7 @@ class GeographicArea(metaclasses.GeographicEntity):
     def geoid(self):
         """The Geographic Identifier.
 
-        .. info::
+        .. note::
 
           Fully concatenated geographic code (State FIPS and component numbers).
 
@@ -659,7 +659,7 @@ class GeographicArea(metaclasses.GeographicEntity):
     def water_area(self):
         """The area of the geography that is covered in water, expressed in square meters.
 
-        .. info::
+        .. note::
 
           Water area calculations in this table include only perennial water. All other
           water (intermittent, glacier, and marsh/swamp) is included in this table as part

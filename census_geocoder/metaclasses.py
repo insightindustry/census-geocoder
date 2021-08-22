@@ -638,7 +638,7 @@ class GeographicEntity(BaseEntity):
 
         :param one_line: A single-line address, e.g.
           ``'4600 Silver Hill Rd, Washington, DC 20233'``. Defaults to
-            :obj:`None <python:None>`.
+          :obj:`None <python:None>`.
         :type one_line: :class:`str <python:str>` / :obj:`None <python:None>`
 
         :param street_1: A street address, e.g. ``'4600 Silver Hill Rd'``. Defaults to

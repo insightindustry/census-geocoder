@@ -363,3 +363,5 @@ working with other Census Bureau datasets) are:
 
   * :class:`GeographyCollection <census_geocoder.geographies.GeographyCollection>`
   * :class:`Geography <census_geocoder.geographies.GeographicArea>`
+
+.. _Census Geocoder API: https://geocoding.geo.census.gov/geocoder/

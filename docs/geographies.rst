@@ -56,17 +56,17 @@ language and diagrams below.
 
 .. seealso::
 
-  * :download:`U.S. Census Bureau Geographic Entities and Concepts (PDF) </_static/geoareaconcepts.pdf>`
-  * :download:`The Standard Hierarchy of Census Geographic Entities (PDF) </_static/geodiagram.pdf>`
-  * :download:`Hierarchy of American Indian, Alaska Native, and Native Hawaiian Areas (PDF) </_static/aianhh_diag.pdf>`
-  * :download:`The Standard Hierarchy of Census Geographic Entities in Island Areas (PDF) </_static/geodiagram_islandareas.pdf>`
+  * :download:`U.S. Census Bureau Geographic Entities and Concepts (PDF) <_static/geoareaconcepts.pdf>`
+  * :download:`The Standard Hierarchy of Census Geographic Entities (PDF) <_static/geodiagram.pdf>`
+  * :download:`Hierarchy of American Indian, Alaska Native, and Native Hawaiian Areas (PDF) <_static/aianhh_diag.pdf>`
+  * :download:`The Standard Hierarchy of Census Geographic Entities in Island Areas (PDF) <_static/geodiagram_islandareas.pdf>`
 
 .. _core_geographic_hierarchy:
 
 Core Hierarchy
 ----------------------
 
-.. figure:: /_static/core_hierarchy.jpg
+.. figure:: _static/core_hierarchy.jpg
   :alt: Core Geographic Hierarchy
   :align: center
 
@@ -237,6 +237,8 @@ it does not conform to either the state or county-level definitions used in the 
 hierarchy. This is because tribal population groups, federally-designated American Indian
 areas, tribal-designated areas, etc. may often cross state, division, or regional lines.
 
-.. figure:: /_static/aianhh_diag.png
+.. figure:: _static/aianhh_diag.png
   :alt: American Indian, Alaska Native, and Native Hawaiian Hierarchy
   :align: center
+
+.. _Census Geocoder API: https://geocoding.geo.census.gov/geocoder/

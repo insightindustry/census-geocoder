@@ -20,7 +20,7 @@ US Census Geocoder
  Home <self>
  Quickstart: Patterns and Best Practices <quickstart>
  Using the Census Geocoder <using>
- Census Geographies Explained <geographies>
+ Geographies in the Census Geocoder <geographies>
  API Reference <api>
  Error Reference <errors>
  Contributor Guide <contributing>
