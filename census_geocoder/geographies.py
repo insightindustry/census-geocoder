@@ -1736,7 +1736,7 @@ GEOGRAPHY_MAP = {
                                       CongressionalDistrict_113),
     '111th Congressional Districts': ('congressional_districts_111',
                                       CongressionalDistrict_111),
-    'Combind Statistical Areas': ('csa', CombinedStatisticalArea),
+    'Combined Statistical Areas': ('csa', CombinedStatisticalArea),
     'Metropolitan Statistical Areas': ('msa', MetropolitanStatisticalArea),
     'Micropolitan Statistical Areas': ('micropolitan_stastistical_areas',
                                        MicropolitanStatisticalArea),
