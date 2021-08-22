@@ -8,6 +8,16 @@ Glossary
     The period in time when the geographic data was snapshotted for use / return by the
     `Census Geocoder API`_.
 
+  Census Block
+    The single smallest element in the :ref:`core geographic hierarchy <core_geographic_hierarchy>`
+    is the **Census Block**. This is the most granular geographical area for which the US
+    Census Bureau reports data, and is the smallest geographic unit where data is
+    available for 100% of its resident population.
+
+  Census Data
+    This is information that is collected from the Constitutionally-mandated decennial
+    census, which collects information from 100% of residents in the United States.
+
   Forward Geocoding
     Also known as :term:`geocoding`, a process that identifies a specific canonical
     location based on its street address.
@@ -38,6 +48,11 @@ Glossary
   Reverse Geocoding
     A process that identifies a specific canonical location based on its precise
     geographic coordinates (typically expressed as latitude and longitude).
+
+  Sampled Data
+    Data reported by the US Census Bureau that is derived from data collected from a
+    subset of the resident population (i.e. from a surveyed sample of potential
+    respondents).
 
   Tigerline
     Tigerline and Shapefiles represent the GIS data that defines all of the features
