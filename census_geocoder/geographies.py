@@ -132,7 +132,7 @@ class GeographicArea(metaclasses.GeographicEntity):
 
     @object_id.setter
     def object_id(self, value):
-        self._object_id = validators.string(value, allow_empty = True)
+        self._object_id = validators.numeric(value, allow_empty = True)
 
     @property
     def name(self):
@@ -184,11 +184,14 @@ class GeographicArea(metaclasses.GeographicEntity):
 
     @funcstat.setter
     def funcstat(self, value):
-        value = validators.string(value, allow_empty = None)
+        value = validators.string(value, allow_empty = True)
         if value and value.upper() not in FUNCSTAT:
             raise ValueError(f'value ("{value}") not a recognized FUNCSTAT code')
 
-        self._funcstat = value.upper()
+        if value:
+            self._funcstat = value.upper()
+        else:
+            self._funcstat = None
 
     @property
     def lsad(self):
@@ -457,8 +460,10 @@ class GeographicArea(metaclasses.GeographicEntity):
             raise ValueError(
                 f'necta_pci expects a 1-character value. Received: {len(value)}'
             )
-
-        self._necta_pci = value.upper()
+        if value:
+            self._necta_pci = value.upper()
+        else:
+            self._necta_pci = value
 
     @property
     def cbsa_pci(self):
@@ -475,8 +480,10 @@ class GeographicArea(metaclasses.GeographicEntity):
             raise ValueError(
                 f'cbsa_pci expects a 1-character value. Received: {len(value)}'
             )
-
-        self._cbsa_pci = value.upper()
+        if value:
+            self._cbsa_pci = value.upper()
+        else:
+            self._cbsa_pci = value
 
     @property
     def is_principal_city(self):
@@ -557,7 +564,7 @@ class GeographicArea(metaclasses.GeographicEntity):
 
     @high_school_grade.setter
     def high_school_grade(self, value):
-        self._high_school_grade = validators.string(value, alhigh_empty = True)
+        self._high_school_grade = validators.string(value, allow_empty = True)
 
     @property
     def csa(self):
@@ -1763,7 +1770,7 @@ GEOGRAPHY_MAP = {
     'Oklahoma Tribal Statistical Areas': ('otsa', OTSA),
     'State Designated Tribal Statistical Areas': ('sdtsa', SDTSA),
     'Tribal Designated Statistical Areas': ('tdsa', TDSA),
-    'American Indian Joint-Use Areas': ('american_indian_joint_use_area', AIJUA),
+    'American Indian Joint-Use Areas': ('american_indian_joint_use_areas', AIJUA),
     'Combined New England City and Town Areas': ('combined_nectas', CombinedNECTA),
     'New England City and Town Area Divisions': ('necta_divisions', NECTADivision),
     'Metropolitan New England City and Town Areas': ('metropolitan_nectas',
@@ -1792,8 +1799,8 @@ def get_target_layer_cls(property_name):
 
     """
     for key in GEOGRAPHY_MAP:
-        tuple_object = GEOGRAPHY_MAP.get('key')
-        if tuple_object[0] == property_name:
+        tuple_object = GEOGRAPHY_MAP.get(key, None)
+        if tuple_object and tuple_object[0] == property_name:
             return tuple_object[1]
 
     raise errors.CensusGeocoderError(f'Property name "{property_name}" not recognized.')
@@ -1842,6 +1849,7 @@ class GeographyCollection(metaclasses.BaseEntity):
         self._tribal_subdivisions = []
         self._metropolitan_divisions = []
         self._zcta5 = []
+        self._zcta_2020 = []
         self._zcta_2010 = []
         self._unified_school_districts = []
         self._secondary_school_districts = []
@@ -1868,6 +1876,7 @@ class GeographyCollection(metaclasses.BaseEntity):
         self._blocks_2020 = []
         self._tracts = []
         self._tribal_tracts = []
+        self._tribal_block_groups = []
         self._metrpolitan_nectas = []
         self._estates = []
         self._subbarrios = []
@@ -1882,7 +1891,7 @@ class GeographyCollection(metaclasses.BaseEntity):
         self._otsa = []
         self._sdtsa = []
         self._tdsa = []
-        self._american_indian_joint_use_area = []
+        self._american_indian_joint_use_areas = []
         self._combined_nectas = []
         self._necta_divisions = []
         self._metropolitan_nectas = []
@@ -1893,9 +1902,10 @@ class GeographyCollection(metaclasses.BaseEntity):
         self._urban_clusters = []
         self._urban_clusters_2010 = []
         self._traffic_analysis_districts = []
-        self._traffic_analsysis_zones = []
+        self._traffic_analysis_zones = []
 
-        self = self.from_dict(kwargs)
+        if kwargs:
+            self = self.from_dict(kwargs)
 
     def __len__(self):
         cls = self.__class__
@@ -1937,8 +1947,8 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @pumas_2010.setter
     def pumas_2010(self, value):
-        property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        property_name = currentframe().f_code.co_name
+        self._set_hidden_property(value, property_name)
 
     @property
     def pumas(self):
@@ -1950,8 +1960,8 @@ class GeographyCollection(metaclasses.BaseEntity):
 
     @pumas.setter
     def pumas(self, value):
-        property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        property_name = currentframe().f_code.co_name
+        self._set_hidden_property(value, property_name)
 
     @property
     def regions(self):
@@ -1964,7 +1974,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @regions.setter
     def regions(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def divisions(self):
@@ -1977,7 +1987,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @divisions.setter
     def divisions(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def states(self):
@@ -1990,7 +2000,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @states.setter
     def states(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def counties(self):
@@ -2003,7 +2013,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @counties.setter
     def counties(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def county_subdivisions(self):
@@ -2016,7 +2026,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @county_subdivisions.setter
     def county_subdivisions(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def tribal_subdivisions(self):
@@ -2029,7 +2039,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @tribal_subdivisions.setter
     def tribal_subdivisions(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def metropolitan_divisions(self):
@@ -2042,7 +2052,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @metropolitan_divisions.setter
     def metropolitan_divisions(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def zcta_2010(self):
@@ -2055,7 +2065,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @zcta_2010.setter
     def zcta_2010(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def zcta_2020(self):
@@ -2068,7 +2078,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @zcta_2020.setter
     def zcta_2020(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def zcta5(self):
@@ -2081,7 +2091,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @zcta5.setter
     def zcta5(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def unified_school_districts(self):
@@ -2094,7 +2104,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @unified_school_districts.setter
     def unified_school_districts(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def secondary_school_districts(self):
@@ -2107,7 +2117,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @secondary_school_districts.setter
     def secondary_school_districts(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def elementary_school_districts(self):
@@ -2120,7 +2130,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @elementary_school_districts.setter
     def elementary_school_districts(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def voting_districts(self):
@@ -2133,7 +2143,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @voting_districts.setter
     def voting_districts(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def state_legislative_districts_upper(self):
@@ -2146,7 +2156,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @state_legislative_districts_upper.setter
     def state_legislative_districts_upper(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def state_legislative_districts_lower(self):
@@ -2159,7 +2169,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @state_legislative_districts_lower.setter
     def state_legislative_districts_lower(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def state_legislative_districts_upper_2018(self):
@@ -2172,7 +2182,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @state_legislative_districts_upper_2018.setter
     def state_legislative_districts_upper(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def state_legislative_districts_lower_2018(self):
@@ -2185,7 +2195,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @state_legislative_districts_lower_2018.setter
     def state_legislative_districts_lower_2018(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def state_legislative_districts_upper_2016(self):
@@ -2198,7 +2208,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @state_legislative_districts_upper_2016.setter
     def state_legislative_districts_upper(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def state_legislative_districts_lower_2016(self):
@@ -2211,7 +2221,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @state_legislative_districts_lower_2016.setter
     def state_legislative_districts_lower_2016(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def state_legislative_districts_upper_2012(self):
@@ -2224,7 +2234,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @state_legislative_districts_upper_2012.setter
     def state_legislative_districts_upper(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def state_legislative_districts_lower_2012(self):
@@ -2237,7 +2247,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @state_legislative_districts_lower_2012.setter
     def state_legislative_districts_lower_2012(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def state_legislative_districts_upper_2010(self):
@@ -2250,7 +2260,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @state_legislative_districts_upper_2010.setter
     def state_legislative_districts_upper(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def state_legislative_districts_lower_2010(self):
@@ -2263,7 +2273,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @state_legislative_districts_lower_2010.setter
     def state_legislative_districts_lower_2010(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def congressional_districts_116(self):
@@ -2276,7 +2286,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @congressional_districts_116.setter
     def congressional_districts_116(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def congressional_districts_115(self):
@@ -2289,7 +2299,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @congressional_districts_115.setter
     def congressional_districts_115(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def congressional_districts_113(self):
@@ -2302,7 +2312,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @congressional_districts_113.setter
     def congressional_districts_113(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def congressional_districts_111(self):
@@ -2315,7 +2325,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @congressional_districts_111.setter
     def congressional_districts_111(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def csa(self):
@@ -2328,7 +2338,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @csa.setter
     def csa(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def msa(self):
@@ -2341,7 +2351,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @msa.setter
     def msa(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def block_groups(self):
@@ -2354,7 +2364,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @block_groups.setter
     def block_groups(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def tribal_block_groups(self):
@@ -2367,7 +2377,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @tribal_block_groups.setter
     def tribal_block_groups(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def blocks(self):
@@ -2380,7 +2390,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @blocks.setter
     def blocks(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def blocks_2020(self):
@@ -2393,7 +2403,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @blocks_2020.setter
     def blocks_2020(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def tracts(self):
@@ -2406,7 +2416,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @tracts.setter
     def tracts(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def tribal_tracts(self):
@@ -2419,7 +2429,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @tribal_tracts.setter
     def tribal_tracts(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def metrpolitan_nectas(self):
@@ -2432,7 +2442,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @metrpolitan_nectas.setter
     def metrpolitan_nectas(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def estates(self):
@@ -2445,7 +2455,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @estates.setter
     def estates(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def subbarrios(self):
@@ -2458,7 +2468,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @subbarrios.setter
     def subbarrios(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def consolidated_cities(self):
@@ -2471,7 +2481,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @consolidated_cities.setter
     def consolidated_cities(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def incorporated_places(self):
@@ -2484,7 +2494,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @incorporated_places.setter
     def incorporated_places(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def anrc(self):
@@ -2497,7 +2507,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @anrc.setter
     def anrc(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def federal_american_indian_reservations(self):
@@ -2510,7 +2520,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @federal_american_indian_reservations.setter
     def federal_american_indian_reservations(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def off_reservation_trust_lands(self):
@@ -2523,20 +2533,20 @@ class GeographyCollection(metaclasses.BaseEntity):
     @off_reservation_trust_lands.setter
     def off_reservation_trust_lands(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
-    def state_american_indian_reservation(self):
+    def state_american_indian_reservations(self):
         """State American Indian Reservation
 
         :rtype: :class:`list <python:list>` of :class:`StateAmericanIndianReservation`
         """
-        return self._state_american_indian_reservation
+        return self._state_american_indian_reservations
 
-    @state_american_indian_reservation.setter
-    def state_american_indian_reservation(self, value):
+    @state_american_indian_reservations.setter
+    def state_american_indian_reservations(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def hawaiian_home_lands(self):
@@ -2549,7 +2559,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @hawaiian_home_lands.setter
     def hawaiian_home_lands(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def anvsa(self):
@@ -2562,7 +2572,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @anvsa.setter
     def anvsa(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def otsa(self):
@@ -2575,7 +2585,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @otsa.setter
     def otsa(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def sdtsa(self):
@@ -2588,7 +2598,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @sdtsa.setter
     def sdtsa(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def tdsa(self):
@@ -2601,7 +2611,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @tdsa.setter
     def tdsa(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def american_indian_joint_use_areas(self):
@@ -2614,7 +2624,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @american_indian_joint_use_areas.setter
     def american_indian_joint_use_areas(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def combined_nectas(self):
@@ -2627,7 +2637,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @combined_nectas.setter
     def combined_nectas(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def necta_divisions(self):
@@ -2640,7 +2650,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @necta_divisions.setter
     def necta_divisions(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def metrpolitan_nectas(self):
@@ -2653,7 +2663,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @metrpolitan_nectas.setter
     def metrpolitan_nectas(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def micropolitan_nectas(self):
@@ -2666,7 +2676,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @micropolitan_nectas.setter
     def micropolitan_nectas(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def urban_growth_areas(self):
@@ -2679,7 +2689,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @urban_growth_areas.setter
     def urban_growth_areas(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def urbanized_areas(self):
@@ -2692,7 +2702,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @urbanized_areas.setter
     def urbanized_areas(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def urbanized_areas_2010(self):
@@ -2705,7 +2715,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @urbanized_areas_2010.setter
     def urbanized_areas_2010(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def urban_clusters(self):
@@ -2718,7 +2728,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @urban_clusters.setter
     def urban_clusters(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def urban_clusters_2010(self):
@@ -2731,7 +2741,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @urban_clusters_2010.setter
     def urban_clusters_2010(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def traffic_analysis_districts(self):
@@ -2744,7 +2754,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @traffic_analysis_districts.setter
     def traffic_analysis_districts(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def traffic_analysis_zones(self):
@@ -2757,7 +2767,7 @@ class GeographyCollection(metaclasses.BaseEntity):
     @traffic_analysis_zones.setter
     def traffic_analysis_zones(self, value):
         property_name = currentframe().f_back.f_code.co_name
-        self._set_hidden_property_name(value, property_name)
+        self._set_hidden_property(value, property_name)
 
     @property
     def entity_type(self):
@@ -2789,9 +2799,14 @@ class GeographyCollection(metaclasses.BaseEntity):
             if not geographies:
                 break
 
-            geography_tuple = GEOGRAPHY_MAP.get(key)
+            geography_tuple = GEOGRAPHY_MAP.get(key, None)
+            if not geography_tuple:
+                continue
+
             attr_target = geography_tuple[0]
             target_cls = geography_tuple[1]
+
+            print(attr_target)
 
             setattr(result, attr_target, [target_cls.from_dict(x) for x in geographies])
 

@@ -53,33 +53,38 @@ def parse_benchmark_vintage_layers(benchmark = DEFAULT_BENCHMARK,
       the ``benchmark`` specified
 
     """
-    benchmark = validators.string(benchmark, allow_empty = False).upper()
-    benchmark = BENCHMARKS.get(benchmark, None)
+    target_benchmark = validators.string(benchmark, allow_empty = False).upper()
+    benchmark = BENCHMARKS.get(target_benchmark, None)
     if not benchmark:
         raise errors.UnrecognizedBenchmarkError(
-            f'Benchmark ({benchmark}) is not a recognized benchmark.'
+            f'Benchmark ({target_benchmark}) is not a recognized benchmark.'
         )
 
     possible_vintages = VINTAGES.get(benchmark, None)
-    vintage = validators.string(vintage, allow_empty = False).upper()
-    vintage = possible_vintages.get(vintage, None)
+    target_vintage = validators.string(vintage, allow_empty = False).upper()
+    vintage = possible_vintages.get(target_vintage, None)
     if not vintage:
         raise errors.UnrecognizedVintageError(
-            f'Vintage ({vintage}) is not a recognized/available vintage within the '
-            f'"{benchmark}" benchmark.'
+            f'Vintage ({target_vintage}) is not a recognized/available vintage within the'
+            f' "{benchmark}" benchmark.'
         )
 
     if layers != 'all':
         layer_set = LAYERS.get(vintage, None)
         if layer_set:
+            layer_set_lowercase = {}
+            for key in layer_set:
+                layer_set_lowercase[key.lower()] = layer_set.get(key)
+
             layer_targets = layers.split(',')
-            layer_targets = [strip(x) for x in layer_targets]
+            layer_targets = [x.strip() for x in layer_targets]
+
             layers = []
             for layer in layer_targets:
                 layer_lower = layer.lower()
-                layer_set_lowercase = [x.lower() for x in layer_set]
                 if layer_lower in layer_set_lowercase:
-                    layers.append(layer_set_lowercase.get(layer_lower, None))
+                    layers.append(str(layer_set_lowercase.get(layer_lower, None)))
+
             layers = ','.join(layers)
         else:
             layers = None
@@ -147,9 +152,9 @@ class BaseEntity(ABC):
         :rtype: :class:`GeographicEntity`
 
         """
-        as_json = validators.json(as_json, allow_empty = False)
+        as_dict = validators.json(as_json, allow_empty = False)
 
-        return cls.from_dict(as_json)
+        return cls.from_dict(as_dict)
 
     @classmethod
     @abstractmethod
@@ -283,13 +288,16 @@ class GeographicEntity(BaseEntity):
         if layers:
             parameters['layers'] = layers
 
-        url = f'{CENSUS_API_URL}/geocoder/{cls.entity_type}/onelineaddress'
+        instance = cls()
+
+        url = f'{CENSUS_API_URL}/geocoder/{instance.entity_type}/onelineaddress'
 
         result = backoff(requests.get,
                          args = [url],
                          kwargs = {'params': parameters},
                          max_tries = 5,
                          max_delay = 10)
+        print(result.url)
 
         if result.status_code >= 400:
             raise errors.CensusAPIError(
@@ -413,7 +421,7 @@ class GeographicEntity(BaseEntity):
         is_valid = False
         if street_1:
             is_valid = True
-            parameters['street_1'] = street_1
+            parameters['street'] = street_1
         if city:
             is_valid = True
             parameters['city'] = city
@@ -427,7 +435,9 @@ class GeographicEntity(BaseEntity):
         if not is_valid:
             raise errors.NoAddressError()
 
-        url = f'{CENSUS_API_URL}/geocoder/{cls.entity_type}/address'
+        instance = cls()
+
+        url = f'{CENSUS_API_URL}/geocoder/{instance.entity_type}/address'
 
         result = backoff(requests.get,
                          args = [url],
@@ -606,8 +616,8 @@ class GeographicEntity(BaseEntity):
                                                                     layers)
 
         parameters = {
-            'x': '{0:f}'.format(str(longitude)),
-            'y': '{0:f}'.format(str(latitude)),
+            'x': '{0:.6f}'.format(longitude),
+            'y': '{0:.6f}'.format(latitude),
             'benchmark': benchmark,
             'vintage': vintage,
             'format': 'json'
@@ -615,14 +625,16 @@ class GeographicEntity(BaseEntity):
         if layers:
             parameters['layers'] = layers
 
-        url = f'{CENSUS_API_URL}/geocoder/{cls.entity_type}/coordinates'
+        instance = cls()
+
+        url = f'{CENSUS_API_URL}/geocoder/geographies/coordinates'
 
         result = backoff(requests.get,
                          args = [url],
                          kwargs = {'params': parameters},
                          max_tries = 5,
                          max_delay = 10)
-
+        print(result.url)
         if result.status_code >= 400:
             raise errors.CensusAPIError(
                 f'Census Geocoder API returned status code {result.status_code} with '

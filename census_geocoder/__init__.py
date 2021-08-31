@@ -19,11 +19,13 @@ __version__ = version_dict.get('__version__')
 
 location = locations.Location
 geography = geographies.GeographicArea
+geography_collection = geographies.GeographyCollection
 matched_address = locations.MatchedAddress
 
 __all__ = [
     'location',
     'geography',
+    'geography_collection',
     'matched_address',
     'errors'
 ]

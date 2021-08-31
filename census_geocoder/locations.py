@@ -8,7 +8,7 @@ Defines :class:`Location` and :class:`MatchedAddress` geographic entities.
 """
 from validator_collection import validators, checkers
 
-from census_geocoder import metaclasses, geographies
+from census_geocoder import metaclasses, geographies, constants
 
 
 class MatchedAddress(metaclasses.BaseEntity):
@@ -352,20 +352,22 @@ class MatchedAddress(metaclasses.BaseEntity):
         :rtype: :class:`GeographyCollection` / :obj:`None <python:None>`
 
         """
+        if not self._geographies:
+            return []
+
         return self._geographies
 
     @geographies.setter
     def geographies(self, value):
         if value and not isinstance(value, geographies.GeographyCollection):
             value = validators.dict(value, allow_empty = False)
-            geographies = geographies.GeographyCollection.from_dict(value)
+            geos = geographies.GeographyCollection.from_dict(value)
         elif value:
-            geographies = value
+            geos = value
         else:
-            geographies = None
+            geos = None
 
-        self._geographies = geographies
-
+        self._geographies = geos
 
     @property
     def entity_type(self):
@@ -405,6 +407,7 @@ class MatchedAddress(metaclasses.BaseEntity):
                    tigerline_id = tigerline_id,
                    tigerline_side = tigerline_side)
 
+    @classmethod
     def from_dict(cls, as_dict):
         """Create an instance of the geographic entity from its
         :class:`dict <python:dict>` representation.
@@ -421,7 +424,7 @@ class MatchedAddress(metaclasses.BaseEntity):
 
         address = as_dict.get('result', {})\
                                  .get('addressMatches', {})\
-                                 .get('address', None)
+                                 .get('matchedAddress', None)
 
         longitude = as_dict.get('result', {})\
                            .get('addressMatches', {})\
@@ -490,7 +493,7 @@ class MatchedAddress(metaclasses.BaseEntity):
                           .get('addressComponents', {})\
                           .get('zip', None)
 
-        return cls({
+        return cls(**{
             'tigerline_id': tigerline_id,
             'tigerline_side': tigerline_side,
             'longitude': longitude,
@@ -607,9 +610,9 @@ class Location(metaclasses.GeographicEntity):
             result.append('input_city')
 
         if self.input_state and as_census_fields:
-            reuslt.append('input.address.state')
+            result.append('input.address.state')
         elif self.input_state:
-            reuslt.append('input_state')
+            result.append('input_state')
 
         if self.input_zip_code and as_census_fields:
             result.append('input.address.zip')
@@ -682,7 +685,7 @@ class Location(metaclasses.GeographicEntity):
         return self._input_street
 
     @input_street.setter
-    def input_street_1(self, value):
+    def input_street(self, value):
         self._input_street = validators.string(value, allow_empty = True)
 
     @property
@@ -800,8 +803,8 @@ class Location(metaclasses.GeographicEntity):
 
         :rtype: :class:`str <python:str>` / :obj:`None <python:None>`
         """
-        for key in metaclasses.BENCHMARKS:
-            if metaclasses.BENCHMARKS.get(key, None) == self.benchmark_name:
+        for key in constants.BENCHMARKS:
+            if constants.BENCHMARKS.get(key, None) == self.benchmark_name:
                 return key
 
         return None
@@ -1006,22 +1009,31 @@ class Location(metaclasses.GeographicEntity):
 
         matched_addresses = [MatchedAddress.from_json(x) for x in matched_addresses]
 
-        return cls({
-            'input_one_line': input_one_line,
-            'input_street': input_street,
-            'input_city': input_city,
-            'input_state': input_state,
-            'input_zip_code': input_zip_code,
-            'benchmark_name': benchmark_name,
-            'benchmark_description': benchmark_description,
-            'benchmark_is_default': benchmark_is_default,
-            'benchmark_id': benchmark_id,
-            'vintage_name': vintage_name,
-            'vintage_description': vintage_description,
-            'vintage_is_default': vintage_is_default,
-            'vintage_id': vintage_id,
-            'matched_addresses': matched_addresses
-        })
+        geos = as_dict.get('result', {})\
+                           .get('geographies', {})
+
+        result = cls(**{
+                        'input_one_line': input_one_line,
+                        'input_street': input_street,
+                        'input_city': input_city,
+                        'input_state': input_state,
+                        'input_zip_code': input_zip_code,
+                        'benchmark_name': benchmark_name,
+                        'benchmark_description': benchmark_description,
+                        'benchmark_is_default': benchmark_is_default,
+                        'benchmark_id': benchmark_id,
+                        'vintage_name': vintage_name,
+                        'vintage_description': vintage_description,
+                        'vintage_is_default': vintage_is_default,
+                        'vintage_id': vintage_id,
+                        'matched_addresses': matched_addresses
+                     })
+
+        if geos:
+            geography_collection = geographies.GeographyCollection.from_dict(geos)
+            result.geographies = geography_collection
+
+        return result
 
     def to_dict(self):
         """Returns a :class:`dict <python:dict>` representation of the geographic entity.
