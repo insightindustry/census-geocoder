@@ -518,11 +518,6 @@ class GeographicEntity(BaseEntity):
             raise errors.BatchSizeTooLargeError(f'Batch Too Large. Max of 10,000 entries '
                                                 f'supported. File contains {file_length}')
 
-        with open(file_, 'rb') as file_object:
-            files = {
-                'addressFile': (file_, file_object)
-            }
-
         parameters = {
             'benchmark': benchmark,
             'vintage': vintage,
@@ -531,18 +526,29 @@ class GeographicEntity(BaseEntity):
         if layers:
             parameters['layers'] = layers
 
-        url = f'{CENSUS_API_URL}/geocoder/{cls.entity_type}/addressbatch'
+        instance = cls()
 
-        result = backoff(requests.post,
-                         args = [url],
-                         kwargs = {
-                             'files': files,
-                             'params': parameters
-                         },
-                         max_tries = 5,
-                         max_delay = 10)
+        url = f'{CENSUS_API_URL}/geocoder/{instance.entity_type}/addressbatch'
 
-        if result.status_code >= 400:
+        with open(file_, 'rb') as file_object:
+            files = {
+                'addressFile': (file_, file_object)
+            }
+
+            result = backoff(requests.post,
+                             args = [url],
+                             kwargs = {
+                                 'files': files,
+                                 'params': parameters
+                             },
+                             max_tries = 5,
+                             max_delay = 10)
+
+        if result.status_code >= 400 and 'Malformed input' in result.text:
+            raise errors.MalformedBatchFileError('The batch file submitted did not have '
+                                                 'the expected/required structure. Please'
+                                                 ' check and resubmit.')
+        elif result.status_code >= 400:
             raise errors.CensusAPIError(
                 f'Census Geocoder API returned status code {result.status_code} with '
                 f'message: "{result.text}".'
@@ -866,12 +872,59 @@ class GeographicEntity(BaseEntity):
 
         layers = kwargs.get('layers', DEFAULT_LAYERS)
 
-        result = cls._from_batch_file(file_ = file_,
-                                      benchmark = benchmark,
-                                      vintage = vintage,
-                                      layers = layers)
+        result = cls._get_batch_addresses(file_ = file_,
+                                          benchmark = benchmark,
+                                          vintage = vintage,
+                                          layers = layers)
 
-        return [cls.from_list_item[x] for x in result]
+        return [cls.from_list_item(x) for x in result]
+
+    @classmethod
+    def from_list_item(cls, list_item):
+        """Generate an instance from a list item received in a CSV or related record.
+
+        :param list_item: The comma-separted values from the CSV file. Expects the values
+          returned to be:
+
+          * Unique ID for the record
+          * The address submitted to the `Census Geocoder API`_
+          * Whether the canonical address is a match for the address submitted or not.
+          * Whether the canonical address is an exact match or an inexact/approximate
+            match.
+          * The canonical address that was identified by the `Census Geocoder API`_
+          * The longitude, latitude coordinates determined for the matched location.
+          * The :term:`Tigerline` ID for the matched location.
+          * The side of the road, per the :term:`Tigerline` data on which the matched
+            location can be found.
+
+        :type list_item: :class:`list <python:list>` of :class:`str <python:str>`
+
+        :returns: A geographic entity instance.
+        :rtype: :class:`GeographicEntity`
+        """
+        longitude, latitude = list_item[5].split(',')
+        as_dict = {
+            "result": {
+                "input": {
+                    "address": {
+                        "address": list_item[1]
+                    }
+                },
+                "addressMatches": [{
+                    "matchedAddress": list_item[4],
+                    "coordinates": {
+                        "x": longitude,
+                        "y": latitude
+                    },
+                    "tigerLine": {
+                        "tigerLineId": list_item[6],
+                        "side": list_item[7]
+                    }
+                }]
+            }
+        }
+
+        return cls.from_dict(as_dict)
 
     @classmethod
     def from_coordinates(cls,

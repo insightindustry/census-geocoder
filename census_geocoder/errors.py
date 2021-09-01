@@ -41,6 +41,11 @@ class UnrecognizedVintageError(ConfigurationError):
     pass
 
 
+class MalformedBatchFileError(ConfigurationError):
+    """Error raised when a batch file is structured improperly."""
+    pass
+
+
 class NoAddressError(ConfigurationError):
     """Error raised when there was no address supplied with the request."""
     pass

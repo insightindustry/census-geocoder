@@ -62,6 +62,13 @@ UnrecognizedVintageError (from :class:`ConfigurationError`)
 
 ----------------
 
+MalformedBatchFileError (from :class:`ConfigurationError`)
+----------------------------------------------------------------
+
+.. autoclass:: MalformedBatchFileError
+
+----------------
+
 NoAddressError (from :class:`ConfigurationError`)
 ----------------------------------------------------------------
 
