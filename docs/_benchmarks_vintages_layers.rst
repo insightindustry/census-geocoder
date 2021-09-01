@@ -76,7 +76,7 @@ When using the **Census Geocoder**, you can supply the :term:`benchmark` and
     .. seealso::
 
       * :meth:`Location.from_address() <census_geocoder.locations.Location.from_address>`
-      * :meth:`GeographicEntity.from_address() <census_geocoder.geographies.GeographicEntity.from_address>`
+      * :meth:`GeographicArea.from_address() <census_geocoder.geographies.GeographicArea.from_address>`
 
   .. tab:: Parametrized Address
 
@@ -101,7 +101,7 @@ When using the **Census Geocoder**, you can supply the :term:`benchmark` and
     .. seealso::
 
       * :meth:`Location.from_address() <census_geocoder.locations.Location.from_address>`
-      * :meth:`GeographicEntity.from_address() <census_geocoder.geographies.GeographicEntity.from_address>`
+      * :meth:`GeographicArea.from_address() <census_geocoder.geographies.GeographicArea.from_address>`
 
   .. tab:: Coordinates
 
@@ -122,7 +122,7 @@ When using the **Census Geocoder**, you can supply the :term:`benchmark` and
     .. seealso::
 
       * :meth:`Location.from_coordinates() <census_geocoder.locations.Location.from_coordinates>`
-      * :meth:`GeographicEntity.from_coordinates() <census_geocoder.geographies.GeographicEntity.from_coordinates>`
+      * :meth:`GeographicArea.from_coordinates() <census_geocoder.geographies.GeographicArea.from_coordinates>`
 
   .. tab:: Batch File
 
@@ -141,7 +141,7 @@ When using the **Census Geocoder**, you can supply the :term:`benchmark` and
     .. seealso::
 
       * :meth:`Location.from_batch() <census_geocoder.locations.Location.from_batch>`
-      * :meth:`GeographicEntity.from_batch() <census_geocoder.geographies.GeographicEntity.from_batch>`
+      * :meth:`GeographicArea.from_batch() <census_geocoder.geographies.GeographicArea.from_batch>`
 
 .. hint::
 
@@ -626,7 +626,7 @@ keyword argument as below:
     .. seealso::
 
       * :meth:`Location.from_address() <census_geocoder.locations.Location.from_address>`
-      * :meth:`GeographicEntity.from_address() <census_geocoder.geographies.GeographicEntity.from_address>`
+      * :meth:`GeographicArea.from_address() <census_geocoder.geographies.GeographicArea.from_address>`
 
   .. tab:: Parametrized Address
 
@@ -653,7 +653,7 @@ keyword argument as below:
     .. seealso::
 
       * :meth:`Location.from_address() <census_geocoder.locations.Location.from_address>`
-      * :meth:`GeographicEntity.from_address() <census_geocoder.geographies.GeographicEntity.from_address>`
+      * :meth:`GeographicArea.from_address() <census_geocoder.geographies.GeographicArea.from_address>`
 
   .. tab:: Coordinates
 
@@ -676,7 +676,7 @@ keyword argument as below:
     .. seealso::
 
       * :meth:`Location.from_coordinates() <census_geocoder.locations.Location.from_coordinates>`
-      * :meth:`GeographicEntity.from_coordinates() <census_geocoder.geographies.GeographicEntity.from_coordinates>`
+      * :meth:`GeographicArea.from_coordinates() <census_geocoder.geographies.GeographicArea.from_coordinates>`
 
   .. tab:: Batch File
 
@@ -696,7 +696,7 @@ keyword argument as below:
     .. seealso::
 
       * :meth:`Location.from_batch() <census_geocoder.locations.Location.from_batch>`
-      * :meth:`GeographicEntity.from_batch() <census_geocoder.geographies.GeographicEntity.from_batch>`
+      * :meth:`GeographicArea.from_batch() <census_geocoder.geographies.GeographicArea.from_batch>`
 
 .. hint::
 

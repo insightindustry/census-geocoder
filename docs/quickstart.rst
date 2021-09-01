@@ -34,3 +34,5 @@ Getting Geographical Area Data
 =================================
 
 .. include:: _getting_geography_data.rst
+
+.. _Census Geocoder API: https://geocoding.geo.census.gov/geocoder/

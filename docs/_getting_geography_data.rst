@@ -17,7 +17,7 @@ Here's how to do it:
 
     .. seealso::
 
-      * :meth:`GeographicEntity.from_address() <census_geocoder.geographies.GeographicEntity.from_address>`
+      * :meth:`GeographicArea.from_address() <census_geocoder.geographies.GeographicArea.from_address>`
 
   .. tab:: Parametrized Address
 
@@ -32,7 +32,7 @@ Here's how to do it:
 
     .. seealso::
 
-      * :meth:`GeographicEntity.from_address() <census_geocoder.geographies.GeographicEntity.from_address>`
+      * :meth:`GeographicArea.from_address() <census_geocoder.geographies.GeographicArea.from_address>`
 
   .. tab:: Coordinates
 
@@ -45,7 +45,7 @@ Here's how to do it:
 
     .. seealso::
 
-      * :meth:`GeographicEntity.from_coordinates() <census_geocoder.geographies.GeographicEntity.from_coordinates>`
+      * :meth:`GeographicArea.from_coordinates() <census_geocoder.geographies.GeographicArea.from_coordinates>`
 
   .. tab:: Batch File
 
@@ -53,7 +53,7 @@ Here's how to do it:
 
       import census_geocoder as geocoder
 
-      result = geocoder.geographies.from_batch(file_ = '/my-csv-file.csv')
+      result = geocoder.geography.from_batch(file_ = '/my-csv-file.csv')
 
     .. caution::
 
@@ -67,4 +67,4 @@ Here's how to do it:
 
     .. seealso::
 
-      * :meth:`GeographicEntity.from_batch() <census_geocoder.geographies.GeographicEntity.from_batch>`
+      * :meth:`GeographicArea.from_batch() <census_geocoder.geographies.GeographicArea.from_batch>`
