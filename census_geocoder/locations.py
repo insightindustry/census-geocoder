@@ -36,6 +36,11 @@ class MatchedAddress(metaclasses.BaseEntity):
         self._state = None
         self._zip_code = None
 
+        self._state_fips_code = None
+        self._county_fips_code = None
+        self._tract = None
+        self._block = None
+
         self._geographies = None
 
         for key in kwargs:
@@ -370,6 +375,54 @@ class MatchedAddress(metaclasses.BaseEntity):
         self._geographies = geos
 
     @property
+    def state_fips_code(self):
+        """State FIPS Code
+
+        :rtype: :class:`str <python:str>`
+        """
+        return self._state_fips_code
+
+    @state_fips_code.setter
+    def state_fips_code(self, value):
+        self._state_fips_code = validators.string(value, allow_empty = True)
+
+    @property
+    def tract(self):
+        """Census Tract Code
+
+        :rtype: :class:`str <python:str>`
+        """
+        return self._tract
+
+    @tract.setter
+    def tract(self, value):
+        self._tract = validators.string(value, allow_empty = True)
+
+    @property
+    def block(self):
+        """Census Block Code
+
+        :rtype: :class:`str <python:str>` / :obj:`None <python:None>`
+        """
+        return self._block
+
+    @block.setter
+    def block(self, value):
+        self._block = validators.string(value, allow_empty = True)
+
+    @property
+    def county_fips_code(self):
+        """County FIPS Code
+
+        :rtype: :class:`str <python:str>`
+        """
+        return self._county_fips_code
+
+    @county_fips_code.setter
+    def county_fips_code(self, value):
+        self._county_fips_code = validators.string(value, allow_empty = True)
+
+    @property
     def entity_type(self):
         return 'address'
 
@@ -396,16 +449,21 @@ class MatchedAddress(metaclasses.BaseEntity):
         tigerline_id = csv_record[6]
         tigerline_side = csv_record[7]
 
-        state_fips_code = csv_record[8]
-        county_fips_code = csv_record[9]
-        census_tract_fips = csv_record[10]
-        census_block_fips = csv_record[11]
+        kwargs = {
+            'address': matched_address,
+            'longitude': longitude,
+            'latitude': latitude,
+            'tigerline_id': tigerline_id,
+            'tigerline_side': tigerline_side
+        }
 
-        return cls(address = matched_address,
-                   longitude = longitude,
-                   latitude = latitude,
-                   tigerline_id = tigerline_id,
-                   tigerline_side = tigerline_side)
+        if len(csv_record) > 8:
+            kwargs['state_fips_code'] = csv_record[8]
+            kwargs['county_fips_code'] = csv_record[9]
+            kwargs['tract'] = csv_record[10]
+            kwargs['block'] = csv_record[11]
+
+        return cls(**kwargs)
 
     @classmethod
     def from_dict(cls, as_dict):
@@ -920,16 +978,21 @@ class Location(metaclasses.GeographicEntity):
         tigerline_id = csv_record[6]
         tigerline_side = csv_record[7]
 
-        state_fips_code = csv_record[8]
-        county_fips_code = csv_record[9]
-        census_tract_fips = csv_record[10]
-        census_block_fips = csv_record[11]
+        kwargs = {
+            'address': matched_address,
+            'longitude': longitude,
+            'latitude': latitude,
+            'tigerline_id': tigerline_id,
+            'tigerline_side': tigerline_side
+        }
 
-        matched_address = MatchedAddress(address = matched_address,
-                                         longitude = longitude,
-                                         latitude = latitude,
-                                         tigerline_id = tigerline_id,
-                                         tigerline_side = tigerline_side)
+        if len(csv_record) > 8:
+            kwargs['state_fips_code'] = csv_record[8]
+            kwargs['county_fips_code'] = csv_record[9]
+            kwargs['tract'] = csv_record[10]
+            kwargs['block'] = csv_record[11]
+
+        matched_address = MatchedAddress(**kwargs)
 
         return cls(input_one_line = one_line_address,
                    matched_addresses = [matched_address])

@@ -8,9 +8,10 @@ Tests for the :class:`GeographicArea` class.
 """
 
 import pytest
-from tests.fixtures import input_files
+from tests.fixtures import input_files, check_input_file
 
 from census_geocoder.geographies import GeographicArea
+from census_geocoder.metaclasses import check_length
 from census_geocoder import constants, errors
 
 
@@ -167,3 +168,27 @@ def test_from_coordinates(args, kwargs, error):
     if not error:
         assert result is not None
         assert isinstance(result, GeographicArea) is True
+
+
+@pytest.mark.parametrize('input_value, kwargs, error', [
+    ('successful_batch.csv', {}, None),
+    ('successful_batch.csv', { 'layers': 'all' }, None),
+    ('error_batch.csv', {}, errors.MalformedBatchFileError),
+])
+def test_from_batch(input_files, input_value, kwargs, error):
+    input_value = check_input_file(input_files, input_value)
+
+    file_length = check_length(input_value)
+
+    kwargs['file_'] = input_value
+
+    if not error:
+        result = GeographicArea.from_batch(**kwargs)
+        assert result is not None
+        assert isinstance(result, list) is True
+        assert len(result) == file_length
+        for item in result:
+            assert isinstance(item, GeographicArea) is True
+    else:
+        with pytest.raises(error):
+            result = GeographicArea.from_batch(**kwargs)
