@@ -36,7 +36,7 @@ Each individual test module (e.g. ``test_validators.py``) corresponds to a
 conceptual grouping of functionality. For example:
 
 * ``test_validators.py`` tests validator functions found in
-  ``sqlathanor/_validators.py``
+  ``census_geocoder/_validators.py``
 
 Certain test modules are tightly coupled, as the behavior in one test module may
 have implications on the execution of tests in another. These test modules use
