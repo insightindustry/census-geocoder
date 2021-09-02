@@ -47,7 +47,7 @@ install:
   - pip install -U tox codecov
 
 script:
-  - tox -- -v
+  - tox -- -nauto --inputs C:/Users/chris/github/census-geocoder/tests/input_files -v
 
 after_success:
   - if [[ -e .coverage ]]; then codecov -e $TOXENV; fi
