@@ -15,4 +15,4 @@ Release 0.1.0
   :target: http://census-geocoder.readthedocs.io/en/latest/?badge=v.0.1.0
   :alt: Documentation Status (ReadTheDocs)
 
-* First public release
+* Initial public release.
