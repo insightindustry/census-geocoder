@@ -8,7 +8,7 @@ US Census Geocoder
 
   The **US Census Geocoder** is designed to be compatible with:
 
-    * Python 3.8 or higher
+    * Python 3.6 or higher
 
 .. include:: _unit_tests_code_coverage.rst
 
