@@ -2806,8 +2806,6 @@ class GeographyCollection(metaclasses.BaseEntity):
             attr_target = geography_tuple[0]
             target_cls = geography_tuple[1]
 
-            print(attr_target)
-
             setattr(result, attr_target, [target_cls.from_dict(x) for x in geographies])
 
         return result

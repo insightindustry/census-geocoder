@@ -110,6 +110,9 @@ def test_inspect(kwargs, error):
         'benchmark': 'current'
     }, None),
     ({
+        'one_line': '123 Anyplace St, Anywhere, AK 12345'
+    }, errors.EntityNotFoundError),
+    ({
         'one_line': '4600 Silver Hill Rd, Washington, DC 20223',
         'benchmark': 'CENSUS2020'
     }, errors.UnrecognizedVintageError),
@@ -159,7 +162,7 @@ def test_inspect(kwargs, error):
         'city': 'Washington',
         'state': 'DC',
         'zip_code': '20223'
-    }, errors.CensusAPIError),
+    }, errors.ConfigurationError),
 
     ({}, errors.NoAddressError),
 ])
@@ -178,6 +181,7 @@ def test_from_address(kwargs, error):
 @pytest.mark.parametrize('args, kwargs, error', [
     (None, None, errors.NoAddressError),
     ([-76.92744, 38.845985], None, None),
+    ([-176.92744, 38.845985], None, errors.EntityNotFoundError),
     (None, {
         'longitude': -76.92744,
         'latitude': 38.845985

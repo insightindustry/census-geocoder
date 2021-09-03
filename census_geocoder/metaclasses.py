@@ -296,9 +296,16 @@ class GeographicEntity(BaseEntity):
                          kwargs = {'params': parameters},
                          max_tries = 5,
                          max_delay = 10)
-        print(result.url)
 
-        if result.status_code >= 400:
+        if 'Specify street' in result.text:
+            raise errors.ConfigurationError(f'Did not provide a properly parametrized '
+                                            'address.')
+        elif errors.EntityNotFoundError.evaluate(result,
+                                                 request_type = instance.entity_type):
+            raise errors.EntityNotFoundError(
+                f'Census Geocoder API was unable to find a matching geographic entity.'
+            )
+        elif result.status_code >= 400:
             raise errors.CensusAPIError(
                 f'Census Geocoder API returned status code {result.status_code} with '
                 f'message: "{result.text}".'
@@ -443,7 +450,15 @@ class GeographicEntity(BaseEntity):
                          max_tries = 5,
                          max_delay = 10)
 
-        if result.status_code >= 400:
+        if 'Specify street' in result.text:
+            raise errors.ConfigurationError(f'Did not provide a properly parametrized '
+                                            f'address.')
+        elif errors.EntityNotFoundError.evaluate(result,
+                                                 request_type = instance.entity_type):
+            raise errors.EntityNotFoundError(
+                f'Census Geocoder API was unable to find a matching geographic entity.'
+            )
+        elif result.status_code >= 400:
             raise errors.CensusAPIError(
                 f'Census Geocoder API returned status code {result.status_code} with '
                 f'message: "{result.text}".'
@@ -636,8 +651,13 @@ class GeographicEntity(BaseEntity):
                          kwargs = {'params': parameters},
                          max_tries = 5,
                          max_delay = 10)
-        print(result.url)
-        if result.status_code >= 400:
+
+        if errors.EntityNotFoundError.evaluate(result,
+                                               request_type = 'geographies'):
+            raise errors.EntityNotFoundError(
+                f'Census Geocoder API was unable to find a matching geogrpahic entity.'
+            )
+        elif result.status_code >= 400:
             raise errors.CensusAPIError(
                 f'Census Geocoder API returned status code {result.status_code} with '
                 f'message: "{result.text}".'
@@ -737,7 +757,7 @@ class GeographicEntity(BaseEntity):
         :rtype: :class:`GeographicEntity`
 
         :raises NoAddressError: if no address information is supplied
-        :raises EntityNotFound: if no geographic entity was found matching the address
+        :raises EntityNotFoundError: if no geographic entity was found matching the address
           supplied
         :raises UnrecognizedBenchmarkError: if the ``benchmark`` supplied is not
           recognized
